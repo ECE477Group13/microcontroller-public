@@ -1,3 +1,5 @@
+#ifndef _BLE_H_
+#define _BLE_H_
 #include <stdio.h>
 #include "esp_log.h"
 #include "esp_nimble_hci.h"
@@ -10,3 +12,5 @@
 void init_ble(void);
 uint8_t ble_address_type;
 void ble_app_advertise(void);
+
+#endif
