@@ -58,7 +58,8 @@ static esp_err_t i2c_master_wr_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
     i2c_master_stop(cmd);
 
     // send commands
-    esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE)
+    esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE);
+    return ret;
 }
 
 void init_i2c_master(){
@@ -85,7 +86,7 @@ void init_i2c_master(){
     // begin
     i2c_driver_install(i2c_master_port, config.mode, 0, 0, 0);
 
-   return 1; 
+   return; 
 }
 
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count) {
