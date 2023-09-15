@@ -8,7 +8,11 @@ void app_main() {
     // printf("Init_imu start\n");
 
     // Init I2C
-    init_i2c_master();
+    uint32_t ret = init_i2c_master();
+
+    while (ret) {
+        printf("init_i2c_master: %lx\n", ret);
+    }
 
     // Init imu
     init_imu();

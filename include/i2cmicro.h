@@ -30,7 +30,7 @@
 
 
 // Function declarations
-void init_i2c_master();
+uint32_t init_i2c_master();
 void init_imu();
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
 

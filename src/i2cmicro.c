@@ -62,7 +62,7 @@ static esp_err_t i2c_master_wr_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
     return ret;
 }
 
-void init_i2c_master(){
+uint32_t init_i2c_master(){
     /* overarching function to initialize the i2c*/
 
     int i2c_master_port = I2C_PORT;
@@ -80,13 +80,15 @@ void init_i2c_master(){
     // set clock with the bus frequency
     config.master.clk_speed = I2C_FREQ_HZ; 
 
+    uint32_t ret = 0;
+
     // Configure parameters
-    i2c_param_config(i2c_master_port, &config);
+    ret |= i2c_param_config(i2c_master_port, &config) << 16;
 
     // begin
-    i2c_driver_install(i2c_master_port, config.mode, 0, 0, 0);
+    ret |= i2c_driver_install(i2c_master_port, config.mode, 0, 0, 0);
 
-   return; 
+   return ret; 
 }
 
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count) {
