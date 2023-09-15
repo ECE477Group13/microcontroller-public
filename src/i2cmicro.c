@@ -1,33 +1,46 @@
 #include "i2cmicro.h"
 
+void debug_print(int val, uint16_t print_num) {
+    if (true) {
+        if (val != 0) {
+            while(true) {
+                printf("#%d printout: %d\n", print_num, val);
+            }
+        }
+    }
+}
+
 static esp_err_t i2c_master_rd_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_rd, size_t size){
     if (size == 0) {
         return ESP_OK; 
     }
 
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
+    if(cmd == NULL) debug_print(1, 4);
+    debug_print(i2c_master_start(cmd), 5);
 
     // send device address
-    i2c_master_write_byte(cmd, (i2c_addr << 1) | WR_BIT, ACK_CHECK_EN);
+    debug_print(i2c_master_write_byte(cmd, (i2c_addr << 1) | WR_BIT, ACK_CHECK_EN), 6);
 
     // send register
-    i2c_master_write_byte(cmd, i2c_reg, ACK_CHECK_EN);
+    debug_print(i2c_master_write_byte(cmd, i2c_reg, ACK_CHECK_EN), 7);
 
     // send another start
-    i2c_master_start(cmd);
+    debug_print(i2c_master_start(cmd), 8);
 
     // send device address for read
-    i2c_master_write_byte(cmd, (i2c_addr << 1) | RD_BIT, ACK_CHECK_EN);
+    debug_print(i2c_master_write_byte(cmd, (i2c_addr << 1) | RD_BIT, ACK_CHECK_EN), 9);
 
     if (size > 1) {
-        i2c_master_read(cmd, data_rd, size - 1, ACK_VAL);
+        debug_print(i2c_master_read(cmd, data_rd, size - 1, ACK_VAL), 10);
     }
 
-    i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL);
+    debug_print(i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL), 11);
 
     // queue stop signal
-    i2c_master_stop(cmd);
+    debug_print(i2c_master_stop(cmd), 12);
+
+    // debug_print(1, 13);
 
     // send queued commands
     esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE); // last number is # of ticks to wait before timeout
@@ -103,9 +116,9 @@ void init_imu(){
     // section 5.6 of the IMU Application Note 
     uint8_t val; // placeholder 
     // disable IMU, write (I2C_disable) = 1 to CTRL4_C
-    rdLSM6DS(LSM6DS_CTRL4_C, &(val), 1);
+    debug_print(rdLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 1);
     val |= I2C_disable;
-    wrLSM6DS(LSM6DS_CTRL4_C, &(val), 1);
+    debug_print(wrLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 2);
 
     // who am i
     rdLSM6DS(LSM6DS_WHOAMI, &(val), 1);
