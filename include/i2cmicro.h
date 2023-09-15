@@ -10,8 +10,8 @@
 
 // setup based on https://gist.github.com/mws-rmain/2ba434cd2a3f32d6d343c1c60fbd65c8 
 #define I2C_PORT        I2C_NUM_1 // I2C port # for master development
-#define I2C_SCL_GPIO    8
-#define I2C_SDA_GPIO    9
+#define I2C_SCL_GPIO    9
+#define I2C_SDA_GPIO    8
 #define I2C_FREQ_HZ     50000    // 0 - 100 kHz for standard I2C on the IMU
 
 // SAD Addresses
@@ -27,5 +27,11 @@
 #define NACK_VAL        0x1
 
 #define TICK_RATE       500 // ms before timeout
+
+
+// Function declarations
+void init_i2c_master();
+void init_imu();
+esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
 
 #endif
