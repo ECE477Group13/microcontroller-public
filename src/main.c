@@ -10,10 +10,10 @@ void app_main() {
     
     gpio_set_direction(GPIO_NUM_48, GPIO_MODE_OUTPUT);
     gpio_set_direction(GPIO_NUM_38, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(GPIO_NUM_38, GPIO_PULLDOWN_ONLY);
     
     while(true) {
         gpio_set_level(GPIO_NUM_48, gpio_get_level(GPIO_NUM_38));
-
     }
 
     // Init ble
