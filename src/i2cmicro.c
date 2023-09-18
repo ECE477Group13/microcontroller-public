@@ -3,9 +3,9 @@
 void debug_print(int val, uint16_t print_num) {
     if (true) {
         if (val != 0) {
-            while(true) {
+            // while(true) {
                 printf("#%d printout: %d\n", print_num, val);
-            }
+            // }
         }
     }
 }
@@ -92,6 +92,7 @@ uint32_t init_i2c_master(){
 
     // set clock with the bus frequency
     config.master.clk_speed = I2C_FREQ_HZ; 
+    config.clk_flags = 0;
 
     uint32_t ret = 0;
 

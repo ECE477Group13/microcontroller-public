@@ -12,7 +12,7 @@
 #define I2C_PORT        I2C_NUM_1 // I2C port # for master development
 #define I2C_SCL_GPIO    9
 #define I2C_SDA_GPIO    8
-#define I2C_FREQ_HZ     50000    // 0 - 100 kHz for standard I2C on the IMU
+#define I2C_FREQ_HZ     100000    // 0 - 100 kHz for standard I2C on the IMU
 
 // SAD Addresses
 #define SAD0            0b1101010 // SA0 -> ground

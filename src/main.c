@@ -1,16 +1,22 @@
 #include "main.h"
 #include "i2cmicro.h"
 
-void app_main() {
+void app_main() {    
     // Init flash module
     nvs_flash_init();
+
+    printf("waiting");
+    for (int i = 0; i < 50000; i++) {
+        printf(".");
+    }
+    printf("\n");
 
     // printf("Init_imu start\n");
 
     // Init I2C
     uint32_t ret = init_i2c_master();
 
-    while (ret) {
+    if (ret) {
         printf("init_i2c_master: %lx\n", ret);
     }
 
@@ -31,8 +37,8 @@ void app_main() {
         uint8_t out = 0;
 
         //read status register 
-        printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
-        printf("VAL: %x\n", val);
+        // printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
+        // printf("VAL: %x\n", val);
         if (val & (1<<0)) { // if XLDA is 1 
             rdLSM6DS(LSM6DS_OUTX_L_A, &(val), 1);
             printf("%d\n", val);
