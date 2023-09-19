@@ -44,9 +44,12 @@ static esp_err_t i2c_master_rd_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
 
     // send queued commands
     esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE); // last number is # of ticks to wait before timeout
+    debug_print(ret, 201);
 
     // free i2c commands
     i2c_cmd_link_delete(cmd);
+
+    // debug_print(1, 777);
 
     return ret;
 }
@@ -72,6 +75,9 @@ static esp_err_t i2c_master_wr_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
 
     // send commands
     esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE);
+
+    i2c_cmd_link_delete(cmd);
+
     return ret;
 }
 
@@ -114,36 +120,44 @@ esp_err_t wrLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count){
 }
 
 void init_imu(){
-    // section 5.6 of the IMU Application Note 
-    uint8_t val; // placeholder 
-    // disable IMU, write (I2C_disable) = 1 to CTRL4_C
-    debug_print(rdLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 1);
-    val |= I2C_disable;
-    debug_print(wrLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 2);
+    // section 4.1 of LSM6DSO32 appl note
+    uint8_t value = 01;
+    debug_print(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1), -999);
+    value = 0x60;
+    debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
 
-    // who am i
-    rdLSM6DS(LSM6DS_WHOAMI, &(val), 1);
-    if (val == 0x6C) {
-        ESP_LOGI("I2C_restart", "Initializing LSM6DSO32 ID:0x%X", val);
-    }
 
-    // set ODR_XL[3:0] in the CTRL1_XL reg for accelerometer ODR max is 3.3 kHz, also turns on accelerometer
-    lsm6ds_data_rate_t data_rate = LSM6DS_RATE_3_33K_HZ;
-    val = ((uint8_t) data_rate) << 4;
-    wrLSM6DS(LSM6DS_CTRL1_XL, &(val), 1);
+    
+    // // section 5.6 of the IMU Application Note 
+    // uint8_t val; // placeholder 
+    // // disable IMU, write (I2C_disable) = 1 to CTRL4_C
+    // debug_print(rdLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 1);
+    // val |= I2C_disable;
+    // debug_print(wrLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 2);
 
-    // set WAKE_UP_DUR to set inactivity duration
-    val = 0x02;
-    wrLSM6DS(LSM6DS_WAKEUP_DUR, &(val), 1);
+    // // who am i
+    // rdLSM6DS(LSM6DS_WHOAMI, &(val), 1);
+    // if (val == 0x6C) {
+    //     ESP_LOGI("I2C_restart", "Initializing LSM6DSO32 ID:0x%X", val);
+    // }
 
-    // set inactivty and activity threshold in WAKE_UP_THS
-    val = 0x01;
-    wrLSM6DS(LSM6DS_WAKEUP_THS, &(val), 1);
+    // // set ODR_XL[3:0] in the CTRL1_XL reg for accelerometer ODR max is 3.3 kHz, also turns on accelerometer
+    // lsm6ds_data_rate_t data_rate = LSM6DS_RATE_3_33K_HZ;
+    // val = ((uint8_t) data_rate) << 4;
+    // wrLSM6DS(LSM6DS_CTRL1_XL, &(val), 1);
 
-    // set INTERRUPT_ENABLE bit to 1 in TAP_CFG reg
+    // // set WAKE_UP_DUR to set inactivity duration
+    // val = 0x02;
+    // wrLSM6DS(LSM6DS_WAKEUP_DUR, &(val), 1);
+
+    // // set inactivty and activity threshold in WAKE_UP_THS
+    // val = 0x01;
+    // wrLSM6DS(LSM6DS_WAKEUP_THS, &(val), 1);
+
+    // // set INTERRUPT_ENABLE bit to 1 in TAP_CFG reg
     
 
-    // set pin for Interrupt in MD1_CFG
+    // // set pin for Interrupt in MD1_CFG
 }
 
 void master_write(){

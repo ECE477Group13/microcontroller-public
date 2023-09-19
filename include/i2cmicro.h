@@ -9,10 +9,10 @@
 #include "LSM6DS.h"
 
 // setup based on https://gist.github.com/mws-rmain/2ba434cd2a3f32d6d343c1c60fbd65c8 
-#define I2C_PORT        I2C_NUM_1 // I2C port # for master development
+#define I2C_PORT        I2C_NUM_0 // I2C port # for master development
 #define I2C_SCL_GPIO    9
 #define I2C_SDA_GPIO    8
-#define I2C_FREQ_HZ     100000    // 0 - 100 kHz for standard I2C on the IMU
+#define I2C_FREQ_HZ     50000    // 0 - 100 kHz for standard I2C on the IMU
 
 // SAD Addresses
 #define SAD0            0b1101010 // SA0 -> ground
@@ -26,7 +26,7 @@
 #define ACK_VAL         0x0
 #define NACK_VAL        0x1
 
-#define TICK_RATE       500 // ms before timeout
+#define TICK_RATE       100000000 // ms before timeout
 
 
 // Function declarations

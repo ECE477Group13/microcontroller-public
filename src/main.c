@@ -9,6 +9,7 @@ void app_main() {
     for (int i = 0; i < 50000; i++) {
         printf(".");
     }
+    printf("done waiting");
     printf("\n");
 
     // printf("Init_imu start\n");
@@ -37,8 +38,8 @@ void app_main() {
         uint8_t out = 0;
 
         //read status register 
-        // printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
-        // printf("VAL: %x\n", val);
+        printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
+        printf("VAL: %x\n", val);
         if (val & (1<<0)) { // if XLDA is 1 
             rdLSM6DS(LSM6DS_OUTX_L_A, &(val), 1);
             printf("%d\n", val);
