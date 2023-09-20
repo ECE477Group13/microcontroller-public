@@ -46,8 +46,8 @@ void app_main() {
             uint8_t h_reg;
             rdLSM6DS(LSM6DS_OUTX_L_A, &(l_reg), 1);
             rdLSM6DS(LSM6DS_OUTX_H_A, &(h_reg), 1);
-            int reg = (h_reg << 8) | l_reg;
-            if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
+            short reg = (h_reg << 8) | l_reg;
+            // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
             float output = 9.8 * 4 * reg / (256*128) ;
             printf("%f m/s^2\n", output);
             if (reg > 0) {
