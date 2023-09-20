@@ -38,12 +38,19 @@ void app_main() {
         uint8_t out = 0;
 
         //read status register 
-        printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
-        printf("VAL: %x\n", val);
+        rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1);
+        // printf("READ: %d\n", rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1));
+        // printf("VAL: %x\n", val);
         if (val & (1<<0)) { // if XLDA is 1 
-            rdLSM6DS(LSM6DS_OUTX_L_A, &(val), 1);
-            printf("%d\n", val);
-            if (val > 0) {
+            uint8_t l_reg;
+            uint8_t h_reg;
+            rdLSM6DS(LSM6DS_OUTX_L_A, &(l_reg), 1);
+            rdLSM6DS(LSM6DS_OUTX_H_A, &(h_reg), 1);
+            int reg = (h_reg << 8) | l_reg;
+            if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
+            float output = 9.8 * 4 * reg / (256*128) ;
+            printf("%f m/s^2\n", output);
+            if (reg > 0) {
                 out = 1;
             }
 
@@ -51,7 +58,7 @@ void app_main() {
         
         gpio_set_level(GPIO_NUM_48, out);
         
-        gpio_set_level(GPIO_NUM_48, gpio_get_level(GPIO_NUM_38));
+        // gpio_set_level(GPIO_NUM_48, gpio_get_level(GPIO_NUM_38));
         // printf("Hello world!\n");
     }
 
