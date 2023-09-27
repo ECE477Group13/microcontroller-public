@@ -27,6 +27,7 @@
  #define LSM6DS_WAKEUP_THS 0x5B 
  #define LSM6DS_WAKEUP_DUR 0x5C 
  #define LSM6DS_MD1_CFG 0x5E 
+ #define LSM6DS_EMB_FUNC_INT2 0x0E
 
  // register values
  #define I2C_disable 0x04

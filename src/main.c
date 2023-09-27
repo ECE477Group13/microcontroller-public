@@ -21,10 +21,12 @@ void app_main() {
         printf("init_i2c_master: %lx\n", ret);
     }
 
+    printf("Init_imu start\n");
+
     // Init imu
     init_imu();
 
-    // printf("Init_imu end\n");
+    printf("Init_imu end\n");
 
     
     gpio_set_direction(GPIO_NUM_48, GPIO_MODE_OUTPUT);

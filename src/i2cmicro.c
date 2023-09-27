@@ -126,7 +126,15 @@ void init_imu(){
     value = 0x60;
     debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
 
+    // printf("IM here");
+    // debug_print(rdLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1), -997);
+    // value |= 1<<7;
+    // debug_print(wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1), -996);
 
+    // printf("now Im here");
+    // debug_print(rdLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1), -995);
+    // value |= 1<<5;
+    // debug_print(wrLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1), -994);
     
     // // section 5.6 of the IMU Application Note 
     // uint8_t val; // placeholder 
