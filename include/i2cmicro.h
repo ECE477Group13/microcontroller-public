@@ -14,10 +14,6 @@
 #define I2C_SDA_GPIO    8
 #define I2C_FREQ_HZ     50000    // 0 - 100 kHz for standard I2C on the IMU
 
-// SAD Addresses
-#define SAD0            0b1101010 // SA0 -> ground
-#define SAD1            0b1101011 // SA0 -> power
-
 // Read/Write
 #define RD_BIT          I2C_MASTER_READ
 #define WR_BIT          I2C_MASTER_WRITE
@@ -27,7 +23,6 @@
 #define NACK_VAL        0x1
 
 #define TICK_RATE       100000000 // ms before timeout
-
 
 // Function declarations
 uint32_t init_i2c_master();

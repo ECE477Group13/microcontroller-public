@@ -1,5 +1,10 @@
 #include "i2cmicro.h"
 
+
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
 void debug_print(int val, uint16_t print_num) {
     if (true) {
         if (val != 0) {
@@ -10,6 +15,11 @@ void debug_print(int val, uint16_t print_num) {
     }
 }
 
+
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
 static esp_err_t i2c_master_rd_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_rd, size_t size){
     if (size == 0) {
         return ESP_OK; 
@@ -54,6 +64,11 @@ static esp_err_t i2c_master_rd_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
     return ret;
 }
 
+
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
 static esp_err_t i2c_master_wr_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_wr, size_t size){
     // create command queue
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -81,6 +96,11 @@ static esp_err_t i2c_master_wr_slave (i2c_port_t i2c_port, uint8_t i2c_addr, uin
     return ret;
 }
 
+
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
 uint32_t init_i2c_master(){
     /* overarching function to initialize the i2c*/
 
@@ -111,14 +131,47 @@ uint32_t init_i2c_master(){
    return ret; 
 }
 
+
+/*************************************************
+Function Description: 
+    Read from IMU register REG
+Function Arguments:
+    reg: register that is being read
+    pdata: array of data to store read bytes in
+    count: number of bytes
+*************************************************/
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count) {
-    return (i2c_master_rd_slave(I2C_PORT, SAD0, reg, pdata, count));
+    return (i2c_master_rd_slave(I2C_PORT, LSM6DS_SAD0, reg, pdata, count));
 }
 
+
+/*************************************************
+Function Description: Write to IMU register REG
+Function Arguments:
+*************************************************/
 esp_err_t wrLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count){
-    return (i2c_master_wr_slave(I2C_PORT, SAD0, reg, pdata, count));
+    return (i2c_master_wr_slave(I2C_PORT, LSM6DS_SAD0, reg, pdata, count));
 }
 
+
+//NICK
+// Modify for the Battery Babysitter (this is copied from above)
+
+// esp_err_t rdBaby(uint8_t reg, uint8_t *pdata, uint8_t count) {
+//     return (i2c_master_rd_slave(I2C_PORT, SAD0, reg, pdata, count));
+// }
+
+// Also change SAD0 address to new address for Baby
+
+// esp_err_t wrBaby(uint8_t reg, uint8_t *pdata, uint8_t count){
+//     return (i2c_master_wr_slave(I2C_PORT, SAD0, reg, pdata, count));
+// }
+
+
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
 void init_imu(){
     // section 4.1 of LSM6DSO32 appl note
     uint8_t value = 01;
@@ -168,9 +221,15 @@ void init_imu(){
     // // set pin for Interrupt in MD1_CFG
 }
 
-void master_write(){
-    /* section 27.5.4 in tech ref
-    1. Set I2C_MS_MODE (master) to 1, slave to 0
-    2. 
-    */
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
+void init_batt_baby(){
+    // section 4.1 of LSM6DSO32 appl note
+    // uint8_t value = 01;
+    // debug_print(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1), -999);
+    // value = 0x60;
+    // debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
+
 }
