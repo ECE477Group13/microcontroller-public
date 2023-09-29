@@ -163,7 +163,7 @@ Function Arguments:
     
 *************************************************/
 esp_err_t rdBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count) {
-    return (i2c_master_rd_slave(I2C_PORT, SAD0, reg, pdata, count));
+    return (i2c_master_rd_slave(I2C_PORT, BQ72441_I2C_ADDRESS, reg, pdata, count));
 }
 
 // Also change SAD0 address to new address for Baby
@@ -173,7 +173,7 @@ Function Description:
 Function Arguments:
 *************************************************/
 esp_err_t wrBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count){
-    return (i2c_master_wr_slave(I2C_PORT, SAD0, reg, pdata, count));
+    return (i2c_master_wr_slave(I2C_PORT, BQ72441_I2C_ADDRESS, reg, pdata, count));
 }
 
 
@@ -181,12 +181,17 @@ esp_err_t wrBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count){
 Function Description: 
 Function Arguments:
 *************************************************/
-void init_imu(){
+esp_err_t init_imu(){
     // section 4.1 of LSM6DSO32 appl note
+    esp_err_t err;
+    
     uint8_t value = 01;
-    debug_print(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1), -999);
+    err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
+    if(err != 0) return err;
+    
     value = 0x60;
-    debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
+    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
+    return err;
 }
 
 
@@ -194,11 +199,19 @@ void init_imu(){
 Function Description: 
 Function Arguments:
 *************************************************/
-void init_batt_baby(){
-    // section 4.1 of LSM6DSO32 appl note
-    // uint8_t value = 01;
-    // debug_print(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1), -999);
-    // value = 0x60;
-    // debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
+esp_err_t init_batt_baby(){
+    uint16_t deviceID;
+    
+    //Wire.begin(); // Initialize I2C master
+    
+    //deviceID = deviceType(); // Read deviceType from BQ27441
+    esp_err_t result = rdBQ27441(BQ27441_CONTROL_DEVICE_TYPE, &deviceID, 1);
+    printf("%d \n", deviceID);
+
+    if( result == 0){
+        return result;
+    }
+
+    return result;
 
 }

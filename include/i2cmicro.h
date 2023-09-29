@@ -7,6 +7,7 @@
 #include "esp_log.h"
 
 #include "LSM6DS.h"
+#include "BQ27441.h"
 
 // setup based on https://gist.github.com/mws-rmain/2ba434cd2a3f32d6d343c1c60fbd65c8 
 #define I2C_PORT        I2C_NUM_0 // I2C port # for master development
@@ -26,7 +27,8 @@
 
 // Function declarations
 uint32_t init_i2c_master();
-void init_imu();
+esp_err_t init_imu();
+esp_err_t init_batt_baby();
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
 
 #endif

@@ -11,6 +11,7 @@ BQ27441 hardware constants, register addresses, and bit positions.
 
 ******************************************************************************/
 #define BQ72441_I2C_ADDRESS 0x55 // Default I2C address of the BQ27441-G1A
+//read ^
 
 ///////////////////////
 // General Constants //
