@@ -154,18 +154,27 @@ esp_err_t wrLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count){
 }
 
 
-//NICK
-// Modify for the Battery Babysitter (this is copied from above)
-
-// esp_err_t rdBaby(uint8_t reg, uint8_t *pdata, uint8_t count) {
-//     return (i2c_master_rd_slave(I2C_PORT, SAD0, reg, pdata, count));
-// }
+/*************************************************
+Function Description: 
+    
+Function Arguments:
+    
+    
+    
+*************************************************/
+esp_err_t rdBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count) {
+    return (i2c_master_rd_slave(I2C_PORT, SAD0, reg, pdata, count));
+}
 
 // Also change SAD0 address to new address for Baby
 
-// esp_err_t wrBaby(uint8_t reg, uint8_t *pdata, uint8_t count){
-//     return (i2c_master_wr_slave(I2C_PORT, SAD0, reg, pdata, count));
-// }
+/*************************************************
+Function Description: 
+Function Arguments:
+*************************************************/
+esp_err_t wrBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count){
+    return (i2c_master_wr_slave(I2C_PORT, SAD0, reg, pdata, count));
+}
 
 
 /*************************************************
@@ -178,48 +187,8 @@ void init_imu(){
     debug_print(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1), -999);
     value = 0x60;
     debug_print(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1), -998);
-
-    // printf("IM here");
-    // debug_print(rdLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1), -997);
-    // value |= 1<<7;
-    // debug_print(wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1), -996);
-
-    // printf("now Im here");
-    // debug_print(rdLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1), -995);
-    // value |= 1<<5;
-    // debug_print(wrLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1), -994);
-    
-    // // section 5.6 of the IMU Application Note 
-    // uint8_t val; // placeholder 
-    // // disable IMU, write (I2C_disable) = 1 to CTRL4_C
-    // debug_print(rdLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 1);
-    // val |= I2C_disable;
-    // debug_print(wrLSM6DS(LSM6DS_CTRL4_C, &(val), 1), 2);
-
-    // // who am i
-    // rdLSM6DS(LSM6DS_WHOAMI, &(val), 1);
-    // if (val == 0x6C) {
-    //     ESP_LOGI("I2C_restart", "Initializing LSM6DSO32 ID:0x%X", val);
-    // }
-
-    // // set ODR_XL[3:0] in the CTRL1_XL reg for accelerometer ODR max is 3.3 kHz, also turns on accelerometer
-    // lsm6ds_data_rate_t data_rate = LSM6DS_RATE_3_33K_HZ;
-    // val = ((uint8_t) data_rate) << 4;
-    // wrLSM6DS(LSM6DS_CTRL1_XL, &(val), 1);
-
-    // // set WAKE_UP_DUR to set inactivity duration
-    // val = 0x02;
-    // wrLSM6DS(LSM6DS_WAKEUP_DUR, &(val), 1);
-
-    // // set inactivty and activity threshold in WAKE_UP_THS
-    // val = 0x01;
-    // wrLSM6DS(LSM6DS_WAKEUP_THS, &(val), 1);
-
-    // // set INTERRUPT_ENABLE bit to 1 in TAP_CFG reg
-    
-
-    // // set pin for Interrupt in MD1_CFG
 }
+
 
 /*************************************************
 Function Description: 
