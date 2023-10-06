@@ -23,7 +23,7 @@ void debug_print(int val, uint16_t print_num)
 }
 
 /*************************************************
-Function Description:
+Function Description: Master Read
 Function Arguments:
 *************************************************/
 static esp_err_t i2c_master_rd_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_rd, size_t size)
@@ -75,7 +75,7 @@ static esp_err_t i2c_master_rd_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint
 }
 
 /*************************************************
-Function Description:
+Function Description: Master Write
 Function Arguments:
 *************************************************/
 static esp_err_t i2c_master_wr_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_wr, size_t size)
