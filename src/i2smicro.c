@@ -5,7 +5,9 @@ i2s_chan_handle_t tx_handle;
 //ONLY need TX since transmitting to audio amp
 /*************************************************
 Function Description:
+    Initialize the i2s channel
 Function Arguments:
+    N/A
 *************************************************/
 void init_i2s_tx() {
 
@@ -51,7 +53,9 @@ void init_i2s_tx() {
 
 /*************************************************
 Function Description:
+    Destroy/disable the i2s channel
 Function Arguments:
+    N/A
 *************************************************/
 void destroy_i2s_tx(){
 
@@ -64,6 +68,7 @@ void destroy_i2s_tx(){
 
 /*************************************************
 Function Description:
+    Write via i2s
 Function Arguments:
     src_buf = pointer of sent data buffer
     bytes_to_write = Max data buffer length
