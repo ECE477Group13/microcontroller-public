@@ -10,6 +10,11 @@
 #include "sdmmc_cmd.h"
 #include "esp_vfs_fat.h"
 
+#define PIN_NUM_MOSI 11
+#define PIN_NUM_MISO 13
+#define PIN_NUM_CLK 12
+#define PIN_NUM_CS 10
+#define MOUNT_POINT "/sdcard"
 
 void init_sd();
 

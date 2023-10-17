@@ -9,54 +9,57 @@ Function Arguments:
 void init_sd(){
     esp_err_t ret;
 
-    const char* base_path = "/sdcard";
-    
-    sdmmc_host_t h;
-    sdmmc_host_t* host = &h;
-    //  = {
-    //     .flags = SDMMC_HOST_FLAG_SPI | SDMMC_HOST_FLAG_8BIT,
-    //     .slot = SDMMC_HOST_SLOT_0,
-    //     .max_freq_khz = SDMMC_FREQ_DEFAULT,
-    //     .io_voltage = 3.3,
-    //     .command_timeout_ms = 0
-    // };
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
 
-    // sdmmc_card_t card = {
-    //     .host = host,
-    //     .max_freq_khz = SDMMC_FREQ_DEFAULT
-    // };
+    spi_bus_config_t bus_cfg = {
+        .mosi_io_num = PIN_NUM_MOSI,
+        .miso_io_num = PIN_NUM_MISO,
+        .sclk_io_num = PIN_NUM_CLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+    };
 
-    sdmmc_card_t c;
-    sdmmc_card_t* card = &c;
+    printf("Host defined\n");
 
-    sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-    //slot_config.width = 1;
+    ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
+    if (ret != ESP_OK) {
+        return;
+    }
 
-    ret = sdmmc_host_init();
-    printf("return: %x\n", ret);
-    ret = sdmmc_host_init_slot(SDMMC_HOST_SLOT_0, &slot_config);
-    printf("return: %x\n", ret);
-    
-    host->init();
+    printf("SPI bus defined\n");
 
-    ret = sdmmc_card_init(host, card);
-    // printf("return: %x\n", ret);
+    sdspi_device_config_t device = SDSPI_DEVICE_CONFIG_DEFAULT();
 
+    device.host_id = host.slot;
 
+    device.gpio_cs = PIN_NUM_CS;
 
-    // testing
+    sdmmc_card_t *card;
 
-    // uint8_t dst [5 * (&card)->csd.sector_size];
-    // ret = sdmmc_read_sectors(&card, &dst, 0, 5);
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+    #ifdef CONFIG_EXAMPLE_FORMAT_IF_MOUNT_FAILED
+            .format_if_mount_failed = true,
+    #else
+            .format_if_mount_failed = false,
+    #endif // EXAMPLE_FORMAT_IF_MOUNT_FAILED
+            .max_files = 5,
+            .allocation_unit_size = 16 * 1024
+    };
 
-    // printf("return: %x\n", ret);
+    const char mount_point[] = MOUNT_POINT;
 
-    // esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-    //     .format_if_mount_failed = false,
-    //     .max_files = 5
-    // };
+    ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &device, &mount_config, &card);
 
-    // esp_vfs_fat_sdmmc_mount(base_path, &host, &slot_config, &mount_config);
+    printf("mounted\n");
+
+    if (ret != ESP_OK) {
+        return;
+    }
+
+    // Card has been initialized, print its properties
+    sdmmc_card_print_info(stdout, card);
+
+    printf("done\n");
 
 }
 
