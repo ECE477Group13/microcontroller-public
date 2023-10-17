@@ -13,8 +13,8 @@
 #define I2S_LRC 0 //Left/right clock
 #define I2S_PORT 0 //Port number
 
-void init_i2s_tx();
-void destroy_i2s_tx()
-void write_i2s_tx(const void* src_buf, size_t bytes_to_write, size_t bytes_written, uint32_t ticks_to_wait);
+void init_i2s_tx(i2s_chan_handle_t* tx_handle);
+void destroy_i2s_tx(i2s_chan_handle_t* tx_handle);
+void write_i2s_tx(i2s_chan_handle_t* tx_handle, const void* src_buf, size_t bytes_to_write, size_t bytes_written, uint32_t ticks_to_wait);
 
 #endif
