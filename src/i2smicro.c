@@ -1,8 +1,12 @@
 #include "i2smicro.h"
+#include "string.h"
+
+#define TAG "I2S"
+#define WAV = ".wav"
 
 i2s_chan_handle_t tx_handle;
 
-//ONLY need TX since transmitting to audio amp
+
 /*************************************************
 Function Description:
     Initialize the i2s channel
@@ -22,7 +26,11 @@ void init_i2s_tx() {
     * These two helper macros are defined in 'i2s_std.h' which can only be used in STD mode.
     * They can help to specify the slot and clock configurations for initialization or updating */
     i2s_std_config_t std_cfg = {
-        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(44100),
+        .clk_cfg = {
+            .sample_rate_hz = 44100,
+            .clk_src = I2S_CLK_SRC_PLL_160M,
+            .mclk_multiple = I2S_MCLK_MULTIPLE_256,
+        },
         .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED, 
@@ -41,17 +49,10 @@ void init_i2s_tx() {
     /* Initialize i2s channel to standard mode*/
     i2s_channel_init_std_mode(tx_handle, &std_cfg);    
 
-    /* If the configurations of slot or clock need to be updated,
-    * stop the channel first and then update it */
-    // i2s_channel_disable(tx_handle);
-    // std_cfg.slot_cfg.slot_mode = I2S_SLOT_MODE_MONO; // Default is stereo
-    // i2s_channel_reconfig_std_slot(tx_handle, &std_cfg.slot_cfg);
-    // std_cfg.clk_cfg.sample_rate_hz = 96000;
-    // i2s_channel_reconfig_std_clock(tx_handle, &std_cfg.clk_cfg);
-
-    printf("Initialized I2S\n");
+    ESP_LOGI(TAG, "I2S Initialized.");
 
 }
+
 
 /*************************************************
 Function Description:
@@ -66,72 +67,60 @@ void destroy_i2s_tx(){
 
     /* If the handle is not needed any more, delete it to release the channel resources */
     i2s_del_channel(tx_handle);
+
+    ESP_LOGI(TAG, "I2S Destroyed.");
 }
-
-/// @brief ///////////////////////////////////////////////////////
-/// @param fp 
-/// @return 
-esp_err_t play_wav(const char *fp)
-{
-  printf("Opening file\n");
-  FILE *fh = fopen(fp, "rb");
-  if (fh == NULL)
-  {
-    printf("Can't open file.\n");
-    return ESP_ERR_INVALID_ARG;
-  }
-
-  // skip the header...
-  printf("skip header\n");
-  fseek(fh, 44, SEEK_SET);
-
-  // create a writer buffer
-  printf("Create a write buffer.\n");
-  int16_t *buf = calloc(AUDIO_BUFFER, sizeof(int16_t));
-  size_t bytes_read = 0;
-  size_t bytes_written = 0;
-
-  bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
-
-  printf("Enable channel.\n");
-  if (i2s_channel_enable(tx_handle) != ESP_OK) {
-    printf("Failed to enable I2S channel.\n");
-  }
-
-  printf("Playing file...\n");
-  while (bytes_read > 0)
-  {
-    // write the buffer to the i2s
-    i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
-    bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
-
-  }
-
-  i2s_channel_disable(tx_handle);
-  free(buf);
-
-  printf("Finished playing file.\n");
-  return ESP_OK;
-}
-
 
 
 /*************************************************
 Function Description:
-    Write via i2s
+    Play wav file from SD card
 Function Arguments:
-    src_buf = pointer of sent data buffer
-    bytes_to_write = Max data buffer length
-    bytes_written = Bytes number that actually be sent
-    ticks_to_wait = Max block time (milliseconds)
+    const char* fp - file path including mounting
+                     point. MUST be .wave file.
+                     Ex) "/sdcard/wave1.wav"
 *************************************************/
-void write_i2s_tx(i2s_chan_handle_t* tx_handle, const void* src_buf, size_t bytes_to_write, size_t bytes_written, uint32_t ticks_to_wait){
-    
-    /* Before writing data, start the TX channel first */
-    i2s_channel_enable(*tx_handle);
+esp_err_t play_wav_i2s(const char *fp)
+{
+    FILE *fh = fopen(fp, "rb");
+    if (fh == NULL)
+    {
+        ESP_LOGI(TAG, "FAILED to open SD file.");
+        return ESP_ERR_INVALID_ARG;
+    }
 
-    i2s_channel_write(*tx_handle, src_buf, bytes_to_write, &bytes_written, ticks_to_wait);
+    // Get the length of the string
+    size_t len = strlen(fp);
 
-    /* Have to stop the channel before deleting it */
-    i2s_channel_disable(*tx_handle);
+    // Check if the string ends with ".wav"
+    if (strcmp(fp + len - 4, ".wav") != 0) {
+        ESP_LOGI(TAG, "INVALID file - not .wav");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* skip the header... */
+    fseek(fh, 44, SEEK_SET);
+
+    /* create a writer buffer */
+    int16_t *buf = calloc(AUDIO_BUFFER, sizeof(int16_t));
+    size_t bytes_read = 0;
+    size_t bytes_written = 0;
+
+    bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
+
+    if (i2s_channel_enable(tx_handle) != ESP_OK) {
+        ESP_LOGI(TAG, "FAILED to enable I2S channel.");
+    }
+
+    /* play file */
+    while (bytes_read > 0) {
+        /* write the buffer to the i2s */
+        i2s_channel_write(tx_handle, buf, bytes_read * sizeof(int16_t), &bytes_written, portMAX_DELAY);
+        bytes_read = fread(buf, sizeof(int16_t), AUDIO_BUFFER, fh);
+    }
+
+    i2s_channel_disable(tx_handle);
+    free(buf);
+
+    return ESP_OK;
 }

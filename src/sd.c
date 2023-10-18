@@ -1,13 +1,16 @@
 #include "sd.h"
 
-FILE *f = NULL;
+#define TAG "SD"
 
+FILE *f = NULL;
 const char mount_point[] = MOUNT_POINT;
 sdmmc_card_t *card;
 
 /*************************************************
-Function Description:
+Function Description: 
+    Initialize SD card
 Function Arguments:
+    N/A
 *************************************************/
 void init_sd(){
     esp_err_t ret;
@@ -49,38 +52,46 @@ void init_sd(){
         return;
     }
 
-    // Card has been initialized, print its properties
-    sdmmc_card_print_info(stdout, card);
+    /* Card has been initialized, print its properties */
+    // sdmmc_card_print_info(stdout, card);
+
+    ESP_LOGI(TAG, "SD Card Initialized.");
 
 }
 
 /*************************************************
 Function Description:
-Function Arguments:
+    Read data from sd_card in binary
+    ONLY USED FOR DEBUGGING
+Function Arguments: 
+    path - Path of file to read from. Need to 
+           include mount point before the file
+           name. Ex) "/sdcard/wave1.wav"
 *************************************************/
 void read_sd(const char* path){
     f = fopen(path, "rb");
 
     if(f == NULL){
-        printf("Failed to open: %s\n", path);
+        ESP_LOGI(TAG, "FAILED to open path on SD.");
         return;
     }
     else{
-        printf("_________\n");
         char line[64];
         fgets(line, sizeof(line), f);
         fclose(f);
-        printf("%s\n", line);
-        printf("_________\n");
     }
 
 }
 
 /*************************************************
 Function Description:
+    Unmount SD Card
 Function Arguments:
+    N/A
 *************************************************/
 void unmount_sd(){
     esp_vfs_fat_sdcard_unmount(mount_point, card);
     //spi_bus_free(host.slot);
+
+    ESP_LOGI(TAG, "SD Card Unmounted.");
 }
