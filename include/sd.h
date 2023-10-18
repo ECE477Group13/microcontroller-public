@@ -17,6 +17,8 @@
 #define MOUNT_POINT "/sdcard"
 
 void init_sd();
+void unmount_sd();
+void read_sd(const char* path);
 
 
 #endif

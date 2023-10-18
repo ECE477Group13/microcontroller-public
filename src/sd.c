@@ -2,6 +2,9 @@
 
 FILE *f = NULL;
 
+const char mount_point[] = MOUNT_POINT;
+sdmmc_card_t *card;
+
 /*************************************************
 Function Description:
 Function Arguments:
@@ -19,22 +22,16 @@ void init_sd(){
         .quadhd_io_num = -1,
     };
 
-    printf("Host defined\n");
-
     ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
     if (ret != ESP_OK) {
         return;
     }
-
-    printf("SPI bus defined\n");
 
     sdspi_device_config_t device = SDSPI_DEVICE_CONFIG_DEFAULT();
 
     device.host_id = host.slot;
 
     device.gpio_cs = PIN_NUM_CS;
-
-    sdmmc_card_t *card;
 
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
     #ifdef CONFIG_EXAMPLE_FORMAT_IF_MOUNT_FAILED
@@ -46,11 +43,7 @@ void init_sd(){
             .allocation_unit_size = 16 * 1024
     };
 
-    const char mount_point[] = MOUNT_POINT;
-
     ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &device, &mount_config, &card);
-
-    printf("mounted\n");
 
     if (ret != ESP_OK) {
         return;
@@ -59,26 +52,28 @@ void init_sd(){
     // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
 
-    printf("done\n");
-
 }
 
 /*************************************************
 Function Description:
 Function Arguments:
 *************************************************/
-void read_sd(){
-    f = fopen("/sdcard/test.txt", "r");
+void read_sd(const char* path){
+    f = fopen(path, "rb");
 
     if(f == NULL){
-        //failed
+        printf("Failed to open: %s\n", path);
         return;
     }
     else{
-        //read
+        printf("_________\n");
+        char line[64];
+        fgets(line, sizeof(line), f);
+        fclose(f);
+        printf("%s\n", line);
+        printf("_________\n");
     }
 
-    fclose(f);
 }
 
 /*************************************************
@@ -86,5 +81,6 @@ Function Description:
 Function Arguments:
 *************************************************/
 void unmount_sd(){
-    // esp_vfs_fat_sdmmc_unmount();
+    esp_vfs_fat_sdcard_unmount(mount_point, card);
+    //spi_bus_free(host.slot);
 }
