@@ -5,6 +5,23 @@
 
 #define TAG "MAIN"
 
+int long_loop() {
+    volatile int j = 0;
+    ESP_LOGI(TAG, "Start wait");
+    for (int i = 0; i < 1; i++) {
+        for(int k = 0; k < 10000000; k++) {
+            j = (i | j) - 1 + k;
+        }
+    }
+    ESP_LOGI(TAG, "End wait");
+
+    // for (int i = 0; i < 5000; i++) {
+    //     ESP_LOGI(TAG, ".");
+    // }
+
+    return j;
+}
+
 /*************************************************
 MAIN CONTROL LOOP
 *************************************************/
@@ -22,14 +39,20 @@ void app_main() {
     */
 
     ESP_LOGI(TAG, "Waiting");
-    for (int i = 0; i < 5000; i++) {
-        ESP_LOGI(TAG, ".");
-    }
+    long_loop();
     ESP_LOGI(TAG, "Done waiting.");
 
     // Code goes here
+    init_i2c_master();
 
-    de_init();
+    while(true) {
+        long_loop();
+
+        print_gps_data_stream();
+    }
+    
+    
+    //de_init();
     
 }
 
@@ -44,3 +67,4 @@ void de_init(){
     unmount_sd();
     destroy_i2s_tx();
 }
+

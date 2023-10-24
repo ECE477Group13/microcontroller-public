@@ -189,6 +189,28 @@ esp_err_t wrBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count)
 
 /*************************************************
 Function Description:
+    Read from GPS register reg
+Function Arguments:
+    reg: register that is being read
+    pdata: array of data to store read bytes in
+    count: number of bytes
+*************************************************/
+esp_err_t rdSAMM8Q(uint8_t reg, uint8_t *pdata, uint8_t count)
+{
+    return (i2c_master_rd_slave(I2C_PORT, SAMM8Q_I2C_ADDR, reg, pdata, count));
+}
+
+/*************************************************
+Function Description: Write to GPS register reg
+Function Arguments:
+*************************************************/
+esp_err_t wrSAMM8Q(uint8_t reg, uint8_t *pdata, uint8_t count)
+{
+    return (i2c_master_wr_slave(I2C_PORT, SAMM8Q_I2C_ADDR, reg, pdata, count));
+}
+
+/*************************************************
+Function Description:
 Function Arguments:
 *************************************************/
 esp_err_t init_imu()
@@ -273,4 +295,49 @@ esp_err_t init_batt_baby()
     }
 
     return result;
+}
+
+
+// /*************************************************
+// Function Description:
+// Function Arguments:
+// *************************************************/
+// esp_err_t init_gps()
+// {
+//     esp_err_t err;
+// }
+
+/*************************************************
+Function Description:
+Function Arguments:
+*************************************************/
+uint8_t print_gps_data_stream()
+{
+    esp_err_t err;
+
+    uint8_t num_bytes_avl_hi;
+    uint8_t num_bytes_avl_lo;
+    err = rdSAMM8Q(SAMM8Q_NUM_BYTES_AVL_HI, &num_bytes_avl_hi, 1);
+    printf("err: %x\n", err);
+    err = rdSAMM8Q(SAMM8Q_NUM_BYTES_AVL_LO, &num_bytes_avl_lo, 1);
+    printf("err: %x\n", err);
+
+    uint16_t num_bytes_avl = (num_bytes_avl_hi << 8) | num_bytes_avl_lo;
+    printf("num_bytes_avl: %d\n", num_bytes_avl);
+
+    if (num_bytes_avl > 0) {
+        
+        
+        uint8_t data_byte = 0;
+
+        while (data_byte != 0xFF) {
+            err = rdSAMM8Q(SAMM8Q_DATA_STREAM, &data_byte, 1);
+            printf("err: %x\n", err);
+            printf("data_byte: %x\n", data_byte);
+        }
+
+        return 1;
+    }
+
+    return 0;
 }
