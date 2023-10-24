@@ -5,6 +5,20 @@
 
 #define TAG "MAIN"
 
+
+/*************************************************
+Function Description:
+    All destroy/de-init/free functions, called
+    in app_main()
+Function Arguments:
+    N/A
+*************************************************/
+void de_init(){
+    unmount_sd();
+    destroy_i2s_tx();
+}
+
+
 /*************************************************
 MAIN CONTROL LOOP
 *************************************************/
@@ -33,14 +47,3 @@ void app_main() {
     
 }
 
-/*************************************************
-Function Description:
-    All destroy/de-init/free functions, called
-    in app_main()
-Function Arguments:
-    N/A
-*************************************************/
-void de_init(){
-    unmount_sd();
-    destroy_i2s_tx();
-}
