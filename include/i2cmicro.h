@@ -31,6 +31,7 @@ uint32_t init_i2c_master();
 esp_err_t init_imu();
 esp_err_t init_batt_baby();
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
-esp_err_t print_gps_data_stream();
+uint8_t print_gps_data_stream();
+void read_gps_port_config();
 
 #endif

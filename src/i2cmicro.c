@@ -341,3 +341,16 @@ uint8_t print_gps_data_stream()
 
     return 0;
 }
+
+void read_gps_port_config()
+{
+    esp_err_t err;
+
+    uint8_t data [3];
+    data[0] = 0x06;
+    data[1] = 0x00;
+    // data[2] = 0x00;
+
+    err = wrSAMM8Q(data[0], &(data[1]), 2);
+    printf("wr err: %x\n", err);
+}

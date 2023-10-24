@@ -5,6 +5,8 @@
 
 #define TAG "MAIN"
 
+
+
 int long_loop() {
     volatile int j = 0;
     ESP_LOGI(TAG, "Start wait");
@@ -38,6 +40,9 @@ void app_main() {
         Use: ESP_LOGI(TAG, "message");
     */
 
+    gpio_num_t led1 = GPIO_NUM_47;
+    gpio_set_direction(led1, GPIO_MODE_OUTPUT);
+
     ESP_LOGI(TAG, "Waiting");
     long_loop();
     ESP_LOGI(TAG, "Done waiting.");
@@ -45,10 +50,15 @@ void app_main() {
     // Code goes here
     init_i2c_master();
 
+    long_loop();
+    long_loop();
+
+    read_gps_port_config();
+
     while(true) {
         long_loop();
 
-        print_gps_data_stream();
+        gpio_set_level(led1, print_gps_data_stream());
     }
     
     
