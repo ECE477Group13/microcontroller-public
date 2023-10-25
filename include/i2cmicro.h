@@ -14,7 +14,7 @@
 #define I2C_PORT I2C_NUM_0 // I2C port # for master development
 #define I2C_SCL_GPIO 9
 #define I2C_SDA_GPIO 8
-#define I2C_FREQ_HZ 50000 // 0 - 100 kHz for standard I2C on the IMU
+#define I2C_FREQ_HZ 100000 // 0 - 100 kHz for standard I2C on the IMU
 
 // Read/Write
 #define RD_BIT I2C_MASTER_READ

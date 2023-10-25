@@ -64,7 +64,6 @@ static esp_err_t i2c_master_rd_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint
 
     // send queued commands
     esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, TICK_RATE); // last number is # of ticks to wait before timeout
-    debug_print(ret, 201);
 
     // free i2c commands
     i2c_cmd_link_delete(cmd);
@@ -318,9 +317,9 @@ uint8_t print_gps_data_stream()
     uint8_t num_bytes_avl_hi;
     uint8_t num_bytes_avl_lo;
     err = rdSAMM8Q(SAMM8Q_NUM_BYTES_AVL_HI, &num_bytes_avl_hi, 1);
-    printf("err: %x\n", err);
+    if (err != 0) printf("hi err: %x\n", err);
     err = rdSAMM8Q(SAMM8Q_NUM_BYTES_AVL_LO, &num_bytes_avl_lo, 1);
-    printf("err: %x\n", err);
+    if (err != 0) printf("lo err: %x\n", err);
 
     uint16_t num_bytes_avl = (num_bytes_avl_hi << 8) | num_bytes_avl_lo;
     printf("num_bytes_avl: %d\n", num_bytes_avl);
@@ -329,11 +328,13 @@ uint8_t print_gps_data_stream()
         
         
         uint8_t data_byte = 0;
+        uint8_t try = 0;
 
-        while (data_byte != 0xFF) {
+        while (try <= 5 || data_byte != 0xFF) {
             err = rdSAMM8Q(SAMM8Q_DATA_STREAM, &data_byte, 1);
-            printf("err: %x\n", err);
-            printf("data_byte: %x\n", data_byte);
+            if (err != 0) printf("rd err: %x\n", err);
+            if (!err) printf("data_byte: %x\n", data_byte);
+            if (data_byte == 0xFF) try ++;
         }
 
         return 1;
@@ -342,15 +343,76 @@ uint8_t print_gps_data_stream()
     return 0;
 }
 
+esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload) {
+
+	uint8_t ck_a = 0;
+	uint8_t ck_b = 0;
+
+	const uint8_t sync_char_1 = 0xB5;
+	const uint8_t sync_char_2 = 0x62;
+
+	// create command queue
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+
+    // queue a start command
+    i2c_master_start(cmd);
+
+    	// send device address
+    i2c_master_write_byte(cmd, (SAMM8Q_I2C_ADDR << 1) | WR_BIT, ACK_CHECK_EN);
+
+	// send sync char 1 
+	i2c_master_write_byte(cmd, sync_char_1, ACK_CHECK_EN);
+
+	// send sync char 2
+	i2c_master_write_byte(cmd, sync_char_2, ACK_CHECK_EN);
+
+	// send class
+	i2c_master_write_byte(cmd, class, ACK_CHECK_EN);
+	ck_a += class; ck_b += ck_a;	
+
+	// send id
+	i2c_master_write_byte(cmd, id, ACK_CHECK_EN);
+	ck_a += id; ck_b += ck_a;
+
+	// send len
+    i2c_master_write_byte(cmd, (len) & 0xFF, ACK_CHECK_EN);
+	ck_a += (len) & 0xFF; ck_b += ck_a;
+    i2c_master_write_byte(cmd, (len >> 8) & 0xFF, ACK_CHECK_EN);
+    ck_a += (len >> 8) & 0xFF; ck_b += ck_a;
+
+	// send payload
+
+	i2c_master_write(cmd, payload, len, ACK_CHECK_EN);
+	for (int i = 0; i < len; i++) {
+        ck_a += payload[i]; ck_b += ck_a;
+    }
+
+    // send CK_A
+    i2c_master_write_byte(cmd, ck_a, ACK_CHECK_EN);
+
+    // send CK_B
+    i2c_master_write_byte(cmd, ck_b, ACK_CHECK_EN);
+
+    // stop
+    i2c_master_stop(cmd);
+
+    // send
+    esp_err_t ret = i2c_master_cmd_begin(I2C_PORT, cmd, TICK_RATE);
+
+    i2c_cmd_link_delete(cmd);
+
+    return ret;
+}
+
 void read_gps_port_config()
 {
     esp_err_t err;
 
-    uint8_t data [3];
-    data[0] = 0x06;
-    data[1] = 0x00;
+    uint8_t payload = 0x00;
     // data[2] = 0x00;
 
-    err = wrSAMM8Q(data[0], &(data[1]), 2);
-    printf("wr err: %x\n", err);
+    //err = ubx_send_msg(0x06, 0x00, 1, &payload); // seems to give something meaningful
+    //printf("msg err: %x\n", err);
+    err = ubx_send_msg(0x06, 0x06, 52, &payload);
+    if (err != 0) printf("msg err2: %x\n", err);
 }

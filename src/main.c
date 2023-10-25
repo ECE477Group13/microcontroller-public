@@ -11,7 +11,7 @@ int long_loop() {
     volatile int j = 0;
     ESP_LOGI(TAG, "Start wait");
     for (int i = 0; i < 1; i++) {
-        for(int k = 0; k < 10000000; k++) {
+        for(int k = 0; k < 10000000; k++) { // 10000000
             j = (i | j) - 1 + k;
         }
     }
@@ -40,7 +40,7 @@ void app_main() {
         Use: ESP_LOGI(TAG, "message");
     */
 
-    gpio_num_t led1 = GPIO_NUM_47;
+    gpio_num_t led1 = GPIO_NUM_45;
     gpio_set_direction(led1, GPIO_MODE_OUTPUT);
 
     ESP_LOGI(TAG, "Waiting");
@@ -53,10 +53,11 @@ void app_main() {
     long_loop();
     long_loop();
 
-    read_gps_port_config();
 
     while(true) {
         long_loop();
+
+        read_gps_port_config();
 
         gpio_set_level(led1, print_gps_data_stream());
     }
