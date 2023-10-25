@@ -411,8 +411,8 @@ void read_gps_port_config()
     uint8_t payload = 0x00;
     // data[2] = 0x00;
 
-    //err = ubx_send_msg(0x06, 0x00, 1, &payload); // seems to give something meaningful
-    //printf("msg err: %x\n", err);
-    err = ubx_send_msg(0x06, 0x06, 52, &payload);
-    if (err != 0) printf("msg err2: %x\n", err);
+    err = ubx_send_msg(0x06, 0x00, 1, &payload); // seems to give something meaningful
+    if (err != 0) printf("msg err: %x\n", err);
+    //err = ubx_send_msg(0x06, 0x06, 52, &payload);
+    //if (err != 0) printf("msg err2: %x\n", err);
 }
