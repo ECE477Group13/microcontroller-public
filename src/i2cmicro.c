@@ -404,15 +404,71 @@ esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload
     return ret;
 }
 
+int long_loop2() {
+    volatile int j = 0;
+    ESP_LOGI("i2cmicro", "Start wait");
+    for (int i = 0; i < 1; i++) {
+        for(int k = 0; k < 10000000; k++) { // 10000000
+            j = (i | j) - 1 + k;
+        }
+    }
+    ESP_LOGI("i2cmicro", "End wait");
+
+    // for (int i = 0; i < 5000; i++) {
+    //     ESP_LOGI(TAG, ".");
+    // }
+
+    return j;
+}
+
 void read_gps_port_config()
 {
     esp_err_t err;
 
-    uint8_t payload = 0x00;
-    // data[2] = 0x00;
-
-    err = ubx_send_msg(0x06, 0x00, 1, &payload); // seems to give something meaningful
+    uint8_t payload;
+    
+    // payload = 0x00;
+    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // if (err != 0) printf("msg err: %x\n", err);
+    
+    uint8_t config [20];
+    config[0] = 1;
+    config[1] = 0;
+    config[2] = 0;
+    config[3] = 0;
+    config[4] = 0xc0;
+    config[5] = 0x8;
+    config[6] = 0x0;
+    config[7] = 0x0;
+    config[8] = 0x80;
+    config[9] = 0x25;
+    config[10] = 0x0;
+    config[11] = 0x0;
+    config[12] = 0x7;
+    config[13] = 0x0;
+    config[14] = 0x0;
+    config[15] = 0x0;
+    config[16] = 0x0;
+    config[17] = 0x0;
+    config[18] = 0x0;
+    config[19] = 0x0;
+    err = ubx_send_msg(0x06, 0x00, 20, config);
     if (err != 0) printf("msg err: %x\n", err);
-    //err = ubx_send_msg(0x06, 0x06, 52, &payload);
-    //if (err != 0) printf("msg err2: %x\n", err);
+
+    // long_loop2();
+
+    // payload = 0x01;
+    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // if (err != 0) printf("msg err: %x\n", err);
+    
+    // payload = 0x02;
+    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // if (err != 0) printf("msg err: %x\n", err);
+    
+    // payload = 0x03;
+    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // if (err != 0) printf("msg err: %x\n", err);
+
+    // err = ubx_send_msg(0x06, 0x06, 0, &payload);
+    // if (err != 0) printf("msg err2: %x\n", err);
 }
