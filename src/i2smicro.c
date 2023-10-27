@@ -31,13 +31,13 @@ void init_i2s_tx() {
             .clk_src = I2S_CLK_SRC_PLL_160M,
             .mclk_multiple = I2S_MCLK_MULTIPLE_256,
         },
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED, 
             .bclk = I2S_BCLK, 
             .ws = I2S_LRC, 
             .dout = I2S_DOUT,
-            .din = I2S_DIN, 
+            .din = I2S_GPIO_UNUSED, 
             .invert_flags = {
                 .mclk_inv = false,
                 .bclk_inv = false,

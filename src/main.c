@@ -42,6 +42,10 @@ void app_main() {
     ESP_LOGI(TAG, "Done waiting.");
 
     // Code goes here
+    // init_i2c_master();
+    // init_sd();
+    // init_i2s_tx();
+    // play_wav_i2s("/sdcard/nat1m.wav");
 
     de_init();
     
