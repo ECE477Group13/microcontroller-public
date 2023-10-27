@@ -347,7 +347,7 @@ uint8_t print_gps_data_stream()
     return 0;
 }
 
-esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload) {
+esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload, uint8_t send_payload) {
 
 	uint8_t ck_a = 0;
 	uint8_t ck_b = 0;
@@ -385,10 +385,11 @@ esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload
     ck_a += (len >> 8) & 0xFF; ck_b += ck_a;
 
 	// send payload
-
-	i2c_master_write(cmd, payload, len, ACK_CHECK_EN);
-	for (int i = 0; i < len; i++) {
-        ck_a += payload[i]; ck_b += ck_a;
+    if(send_payload) {
+        i2c_master_write(cmd, payload, len, ACK_CHECK_EN);
+        for (int i = 0; i < len; i++) {
+            ck_a += payload[i]; ck_b += ck_a;
+        }
     }
 
     printf("ck_a, ck_b calculated: %x, %x\n", ck_a, ck_b);
@@ -450,7 +451,7 @@ void read_gps_port_config()
     config[9] = 0x25;
     config[10] = 0x0;
     config[11] = 0x0;
-    config[12] = 0x7;
+    config[12] = 0x0;
     config[13] = 0x0;
     config[14] = 0x0;
     config[15] = 0x0;
@@ -463,9 +464,35 @@ void read_gps_port_config()
 
     // long_loop2();
 
-    payload = 0x01;
-    err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // payload = 0x01;
+    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    // if (err != 0) printf("msg err: %x\n", err);
+    
+    // payload = 0;
+    // err = ubx_send_msg(0x06, 0x06, 52, &payload, 1);
+    // if (err != 0) printf("msg err: %x\n", err);
+    
+    // UBX-NAV-AOPSTATUS, seems to return something good.
+    // status field can be monitored for 0 to see if 
+    // reciever should be shut down, see pg 357. 
+    // payload = 0;
+    // err = ubx_send_msg(0x01, 0x60, 0, &payload, 0);
+    // if (err != 0) printf("msg err: %x\n", err);
+
+    // works it seems
+    // payload = 0;
+    // err = ubx_send_msg(0x01, 0x39, 0, &payload, 0);
+    // if (err != 0) printf("msg err: %x\n", err);
+
+    // this doesn't work because version isn't supported
+    // payload = 0;
+    // err = ubx_send_msg(0x01, 0x14, 0, &payload, 0);
+    // if (err != 0) printf("msg err: %x\n", err);
+
+    payload = 0;
+    err = ubx_send_msg(0x01, 0x02, 0, &payload, 0);
     if (err != 0) printf("msg err: %x\n", err);
+
     
     // payload = 0x02;
     // err = ubx_send_msg(0x06, 0x00, 1, &payload);
