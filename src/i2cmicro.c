@@ -333,9 +333,13 @@ uint8_t print_gps_data_stream()
         while (try <= 5 || data_byte != 0xFF) {
             err = rdSAMM8Q(SAMM8Q_DATA_STREAM, &data_byte, 1);
             if (err != 0) printf("rd err: %x\n", err);
-            if (!err) printf("data_byte: %x\n", data_byte);
+            if (!err) {
+                if (data_byte == 0xb5) printf("\n");
+                printf("%x ", data_byte);
+            }
             if (data_byte == 0xFF) try ++;
         }
+        printf("\n");
 
         return 1;
     }
@@ -386,6 +390,8 @@ esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload
 	for (int i = 0; i < len; i++) {
         ck_a += payload[i]; ck_b += ck_a;
     }
+
+    printf("ck_a, ck_b calculated: %x, %x\n", ck_a, ck_b);
 
     // send CK_A
     i2c_master_write_byte(cmd, ck_a, ACK_CHECK_EN);
@@ -452,14 +458,14 @@ void read_gps_port_config()
     config[17] = 0x0;
     config[18] = 0x0;
     config[19] = 0x0;
-    err = ubx_send_msg(0x06, 0x00, 20, config);
-    if (err != 0) printf("msg err: %x\n", err);
+    // err = ubx_send_msg(0x06, 0x00, 20, config);
+    // if (err != 0) printf("msg err: %x\n", err);
 
     // long_loop2();
 
-    // payload = 0x01;
-    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
+    payload = 0x01;
+    err = ubx_send_msg(0x06, 0x00, 1, &payload);
+    if (err != 0) printf("msg err: %x\n", err);
     
     // payload = 0x02;
     // err = ubx_send_msg(0x06, 0x00, 1, &payload);
