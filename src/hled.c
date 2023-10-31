@@ -61,3 +61,4 @@ void deinit_hbeatled() {
  return: N/A
 **************************/
     ESP_ERROR_CHECK(ledc_stop(HLED_MODE, HLED_CHANNEL, 0)); // not sure about last arg, supposed to be IDLE LEVEL
+}

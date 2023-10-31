@@ -8,12 +8,13 @@
 
 #include "LSM6DS.h"
 #include "BQ27441.h"
+#include "SAMM8Q.h"
 
 // setup based on https://gist.github.com/mws-rmain/2ba434cd2a3f32d6d343c1c60fbd65c8
 #define I2C_PORT I2C_NUM_0 // I2C port # for master development
 #define I2C_SCL_GPIO 9
 #define I2C_SDA_GPIO 8
-#define I2C_FREQ_HZ 50000 // 0 - 100 kHz for standard I2C on the IMU
+#define I2C_FREQ_HZ 100000 // 0 - 100 kHz for standard I2C on the IMU
 
 // Read/Write
 #define RD_BIT I2C_MASTER_READ
@@ -30,5 +31,8 @@ uint32_t init_i2c_master();
 esp_err_t init_imu();
 esp_err_t init_batt_baby();
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
+uint8_t print_gps_data_stream();
+esp_err_t print_gps_coordinates();
+void read_gps_port_config();
 
 #endif
