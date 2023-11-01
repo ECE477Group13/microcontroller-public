@@ -22,6 +22,10 @@
 #define LSM6DS_OUTX_L_G 0x22       
 #define LSM6DS_OUTX_L_A 0x28       
 #define LSM6DS_OUTX_H_A 0x29       
+#define LSM6DS_OUTY_L_A 0x2A       
+#define LSM6DS_OUTY_H_A 0x2B       
+#define LSM6DS_OUTZ_L_A 0x2C       
+#define LSM6DS_OUTZ_H_A 0x2D       
 #define LSM6DS_STEPCOUNTER 0x4B    
 #define LSM6DS_TAP_CFG 0x58        
 #define LSM6DS_WAKEUP_THS 0x5B 

@@ -24,6 +24,19 @@ int long_loop() {
     return j;
 }
 
+float read_acc(uint8_t lower_reg, uint8_t higher_reg) {
+    uint8_t l_reg;
+    uint8_t h_reg;
+    rdLSM6DS(lower_reg, &(l_reg), 1);
+    rdLSM6DS(higher_reg, &(h_reg), 1);
+    short reg = (h_reg << 8) | l_reg;
+    // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
+
+    // +- 4g, so do ratio of reg to 2^15 and then multiply by 9.8 m/s^s and 4
+    float output = 9.8 * 4 * reg / (256*128) ;
+    return output;
+}
+
 /*************************************************
 MAIN CONTROL LOOP
 *************************************************/
@@ -62,23 +75,15 @@ void app_main() {
         rdLSM6DS(LSM6DS_STATUS_REG, &(val), 1);
 
         if (val & (1<<0)) { // if XLDA is 1 
-            uint8_t l_reg;
-            uint8_t h_reg;
-            rdLSM6DS(LSM6DS_OUTX_L_A, &(l_reg), 1);
-            rdLSM6DS(LSM6DS_OUTX_H_A, &(h_reg), 1);
-            short reg = (h_reg << 8) | l_reg;
-            // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
+            
+            printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
 
-            // +- 4g, so do ratio of reg to 2^15 and then multiply by 9.8 m/s^s and 4
-            float output = 9.8 * 4 * reg / (256*128) ;
-            printf("%f m/s^2\n", output);
-
-            if (count >= 1000) {
+            if (count >= 250) {
                 //print_gps_coordinates();
                 read_gps_port_config();
                 print_gps_data_stream();
 
-                count -= 1000;
+                count -= 250;
             }
         }
         count ++;
