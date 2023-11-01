@@ -1,4 +1,5 @@
 #include "main.h"
+#include "hled.h"
 #include "i2smicro.h"
 #include "i2cmicro.h"
 #include "sd.h"
@@ -35,8 +36,10 @@ void app_main() {
         Use: ESP_LOGI(TAG, "message");
     */
 
+    init_hbeatled();
+
     ESP_LOGI(TAG, "Waiting");
-    for (int i = 0; i < 5000; i++) {
+    for (int i = 0; i < 1000; i++) {
         ESP_LOGI(TAG, ".");
     }
     ESP_LOGI(TAG, "Done waiting.");
@@ -45,7 +48,7 @@ void app_main() {
     // init_i2c_master();
     // init_sd();
     // init_i2s_tx();
-    // play_wav_i2s("/sdcard/nat1m.wav");
+    // play_wav_i2s("/sdcard/wav4s.wav");
 
     de_init();
     
