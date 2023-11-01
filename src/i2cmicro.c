@@ -210,21 +210,20 @@ Function Arguments:
 *************************************************/
 esp_err_t init_imu()
 {
-    // section 4.1 of LSM6DSO32 appl note
+    // // section 4.1 of LSM6DSO32 appl note
     esp_err_t err;
 
     uint8_t value = 01;
-    err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
-    if (err != 0)
-        return err;
+    // err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
+    // if (err != 0)
+    //     return err;
 
-    value = 0x60;
-    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
-    if (err != 0)
-        return err;
+    // value = 0x60;
+    // err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
+    // if (err != 0)
+    //     return err;
 
-
-    // set FUNC_CFG_ACCESS bit of FUNC_CFG_ACCESS
+    // SECTION 6.2 OF LSM6DSO32 APPL NOTE
     value = 1 << 7;
     err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
     if (err != 0) {
@@ -232,29 +231,41 @@ esp_err_t init_imu()
         return err;
     }
 
-    // set SIG_MOT_INIT bit of EMB_FUNC_INIT_A
-    value = 1 << 5;
-    err = wrLSM6DS(LSM6DS_EMB_FUNC_INIT_A, &value, 1);
+    value = 0x20;
+    err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
     if (err != 0) {
-        printf("can't set func en a\n");
+        printf("can't set write op mode\n");
         return err;
     }
     
-    // set SIGN_MOTION_EN bit of EMB_FUNC_EN_A
-    value = 1 << 5;
-    err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
+    value = 0x20;
+    err = wrLSM6DS(LSM6DS_EMB_FUNC_INT1, &value, 1);
     if (err != 0) {
-        printf("can't set func en a\n");
         return err;
     }
 
-    // set INT1_SIG_MOT bit of EMB_FUNC_INT2
-    value = 1 << 5;
-    err = wrLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1);
+    value = 0x80;
+    err = wrLSM6DS(LSM6DS_PAGE_RW, &value, 1);
     if (err != 0) {
-        printf("can't set func int2\n");
+        return err;
     }
+
+    value = 0x00;
+    err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x02;
+    err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x20;
+    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
     return err;
+
 }
 
 /*************************************************
