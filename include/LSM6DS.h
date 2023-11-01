@@ -7,6 +7,7 @@
 #define LSM6DS_I2CADDR_DEFAULT 0x6A 
 
 #define LSM6DS_FUNC_CFG_ACCESS 0x1 
+#define LSM6DS_EMB_FUNC_EN_A 0x04
 #define LSM6DS_INT1_CTRL 0x0D      
 #define LSM6DS_INT2_CTRL 0x0E      
 #define LSM6DS_WHOAMI 0x0F         
@@ -31,6 +32,7 @@
 #define LSM6DS_WAKEUP_THS 0x5B 
 #define LSM6DS_WAKEUP_DUR 0x5C 
 #define LSM6DS_MD1_CFG 0x5E 
+#define LSM6DS_EMB_FUNC_INIT_A 0x66
 #define LSM6DS_EMB_FUNC_INT2 0x0E
 
 // SAD Addresses

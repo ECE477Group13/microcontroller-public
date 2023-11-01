@@ -49,9 +49,14 @@ void app_main() {
 
     // Code goes here
     init_i2c_master();
-    init_imu();
 
     long_loop();
+    long_loop();
+
+    ESP_LOGI(TAG, "INITING IMU");
+    init_imu();
+    ESP_LOGI(TAG, "DONE INITING IMU");
+
     long_loop();
 
     uint16_t count = 0;
@@ -63,7 +68,7 @@ void app_main() {
 
         if (val & (1<<0)) { // if XLDA is 1 
             
-            printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
+            //printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
             // float x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
             // float y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
             // float z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);

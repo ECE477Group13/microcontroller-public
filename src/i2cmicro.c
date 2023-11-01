@@ -227,12 +227,33 @@ esp_err_t init_imu()
     // set FUNC_CFG_ACCESS bit of FUNC_CFG_ACCESS
     value = 1 << 7;
     err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
-    if (err != 0)
+    if (err != 0) {
+        printf("can't set cfg access\n");
         return err;
+    }
+
+    // set SIG_MOT_INIT bit of EMB_FUNC_INIT_A
+    value = 1 << 5;
+    err = wrLSM6DS(LSM6DS_EMB_FUNC_INIT_A, &value, 1);
+    if (err != 0) {
+        printf("can't set func en a\n");
+        return err;
+    }
+    
+    // set SIGN_MOTION_EN bit of EMB_FUNC_EN_A
+    value = 1 << 5;
+    err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
+    if (err != 0) {
+        printf("can't set func en a\n");
+        return err;
+    }
 
     // set INT1_SIG_MOT bit of EMB_FUNC_INT2
     value = 1 << 5;
     err = wrLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1);
+    if (err != 0) {
+        printf("can't set func int2\n");
+    }
     return err;
 }
 
