@@ -74,7 +74,10 @@ void app_main() {
             printf("%f m/s^2\n", output);
 
             if (count >= 1000) {
-                print_gps_coordinates();
+                //print_gps_coordinates();
+                read_gps_port_config();
+                print_gps_data_stream();
+
                 count -= 1000;
             }
         }

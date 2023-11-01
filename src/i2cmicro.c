@@ -416,11 +416,11 @@ int long_loop2() {
     return j;
 }
 
-// void read_gps_port_config()
-// {
-    // esp_err_t err;
+void read_gps_port_config()
+{
+    esp_err_t err;
 
-    // uint8_t payload;
+    uint8_t payload;
     
     // payload = 0x00;
     // err = ubx_send_msg(0x06, 0x00, 1, &payload);
@@ -478,7 +478,7 @@ int long_loop2() {
     // if (err != 0) printf("msg err: %x\n", err);
 
     // payload = 0;
-    // err = ubx_send_msg(0x01, 0x02, 0, &payload);
+    err = ubx_send_msg(0x01, 0x02, 0, &payload);
     // if (err != 0) printf("msg err: %x\n", err);
 
     
@@ -492,7 +492,7 @@ int long_loop2() {
 
     // err = ubx_send_msg(0x06, 0x06, 0, &payload);
     // if (err != 0) printf("msg err2: %x\n", err);
-// }
+}
 
 esp_err_t print_gps_coordinates()
 {
