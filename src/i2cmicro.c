@@ -214,57 +214,56 @@ esp_err_t init_imu()
     esp_err_t err;
 
     uint8_t value = 01;
-    // err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
-    // if (err != 0)
-    //     return err;
-
-    // value = 0x60;
-    // err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
-    // if (err != 0)
-    //     return err;
-
-    // SECTION 6.2 OF LSM6DSO32 APPL NOTE
-    value = 1 << 7;
-    err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
-    if (err != 0) {
-        printf("can't set cfg access\n");
+    err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
+    if (err != 0)
         return err;
-    }
 
-    value = 0x20;
-    err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
-    if (err != 0) {
-        printf("can't set write op mode\n");
-        return err;
-    }
-    
-    value = 0x20;
-    err = wrLSM6DS(LSM6DS_EMB_FUNC_INT1, &value, 1);
-    if (err != 0) {
-        return err;
-    }
-
-    value = 0x80;
-    err = wrLSM6DS(LSM6DS_PAGE_RW, &value, 1);
-    if (err != 0) {
-        return err;
-    }
-
-    value = 0x00;
-    err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
-    if (err != 0) {
-        return err;
-    }
-
-    value = 0x02;
-    err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
-    if (err != 0) {
-        return err;
-    }
-
-    value = 0x20;
+    value = 0x60;
     err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
     return err;
+
+    // // SECTION 6.2 OF LSM6DSO32 APPL NOTE
+    // value = 1 << 7;
+    // err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
+    // if (err != 0) {
+    //     printf("can't set cfg access\n");
+    //     return err;
+    // }
+
+    // value = 0x20;
+    // err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
+    // if (err != 0) {
+    //     printf("can't set write op mode\n");
+    //     return err;
+    // }
+    
+    // value = 0x20;
+    // err = wrLSM6DS(LSM6DS_EMB_FUNC_INT1, &value, 1);
+    // if (err != 0) {
+    //     return err;
+    // }
+
+    // value = 0x80;
+    // err = wrLSM6DS(LSM6DS_PAGE_RW, &value, 1);
+    // if (err != 0) {
+    //     return err;
+    // }
+
+    // value = 0x00;
+    // err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
+    // if (err != 0) {
+    //     return err;
+    // }
+
+    // value = 0x02;
+    // err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
+    // if (err != 0) {
+    //     return err;
+    // }
+
+    // value = 0x20;
+    // err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
+    // return err;
 
 }
 
@@ -461,7 +460,15 @@ int long_loop2() {
     return j;
 }
 
-float read_acc(uint8_t lower_reg, uint8_t higher_reg) {
+int16_t read_acc(uint8_t lower_reg, uint8_t higher_reg) {
+    uint8_t l_reg;
+    uint8_t h_reg;
+    rdLSM6DS(lower_reg, &(l_reg), 1);
+    rdLSM6DS(higher_reg, &(h_reg), 1);
+    return (h_reg << 8) | l_reg;
+}
+
+float read_acc_float(uint8_t lower_reg, uint8_t higher_reg) {
     uint8_t l_reg;
     uint8_t h_reg;
     rdLSM6DS(lower_reg, &(l_reg), 1);

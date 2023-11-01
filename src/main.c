@@ -24,6 +24,10 @@ int long_loop() {
     return j;
 }
 
+bool out_of_tolerance(int16_t val, int16_t val2, int16_t tol) {
+    return !(val-tol <= val2 && val2 <= val+tol);
+}
+
 /*************************************************
 MAIN CONTROL LOOP
 *************************************************/
@@ -40,8 +44,12 @@ void app_main() {
         Use: ESP_LOGI(TAG, "message");
     */
 
-    gpio_num_t led1 = GPIO_NUM_45;
-    gpio_set_direction(led1, GPIO_MODE_OUTPUT);
+    gpio_num_t led = GPIO_NUM_37;
+    gpio_set_direction(led, GPIO_MODE_OUTPUT);
+    gpio_set_level(led, 0);
+
+    gpio_num_t button = GPIO_NUM_1;
+    gpio_set_direction(button, GPIO_MODE_INPUT);
 
     ESP_LOGI(TAG, "Waiting");
     long_loop();
@@ -49,17 +57,15 @@ void app_main() {
 
     // Code goes here
     init_i2c_master();
-
-    long_loop();
-    long_loop();
-
-    ESP_LOGI(TAG, "INITING IMU");
     init_imu();
-    ESP_LOGI(TAG, "DONE INITING IMU");
 
-    long_loop();
+    int16_t x_acc_set = 0;
+    int16_t y_acc_set = 0;
+    int16_t z_acc_set = 0;
 
-    uint16_t count = 0;
+    int TOLERANCE = 0x200;
+
+
     while(true) {
         uint8_t val; // placeholder
 
@@ -68,20 +74,25 @@ void app_main() {
 
         if (val & (1<<0)) { // if XLDA is 1 
             
-            //printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
-            // float x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
-            // float y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
-            // float z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);
+            // printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc_float(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc_float(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc_float(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
+            int16_t x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
+            int16_t y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
+            int16_t z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);
+            printf("X: %d    Y: %d    Z: %d    X: %d    Y: %d    Z: %d\n", x_acc, y_acc, z_acc, x_acc_set, y_acc_set, z_acc_set);
 
-            if (count >= 250) {
-                // print_gps_coordinates();
-                // read_gps_port_config();
-                // print_gps_data_stream();
-
-                count -= 250;
+            if (gpio_get_level(button)) {
+                x_acc_set = x_acc;
+                y_acc_set = y_acc;
+                z_acc_set = z_acc;
             }
+
+            if (out_of_tolerance(x_acc_set, x_acc, TOLERANCE) || out_of_tolerance(y_acc_set, y_acc, TOLERANCE) || out_of_tolerance(z_acc_set, z_acc, TOLERANCE)) {
+                gpio_set_level(led, 1);
+            } else {
+                gpio_set_level(led, 0);
+            }
+
         }
-        count ++;
     }
     
     //de_init();
