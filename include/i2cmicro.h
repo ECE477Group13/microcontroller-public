@@ -34,5 +34,6 @@ esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
 uint8_t print_gps_data_stream();
 esp_err_t print_gps_coordinates();
 void read_gps_port_config();
+float read_acc(uint8_t lower_reg, uint8_t higher_reg);
 
 #endif

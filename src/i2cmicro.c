@@ -416,82 +416,17 @@ int long_loop2() {
     return j;
 }
 
-void read_gps_port_config()
-{
-    esp_err_t err;
+float read_acc(uint8_t lower_reg, uint8_t higher_reg) {
+    uint8_t l_reg;
+    uint8_t h_reg;
+    rdLSM6DS(lower_reg, &(l_reg), 1);
+    rdLSM6DS(higher_reg, &(h_reg), 1);
+    short reg = (h_reg << 8) | l_reg;
+    // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
 
-    uint8_t payload;
-    
-    // payload = 0x00;
-    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
-    
-    // uint8_t config [20];
-    // config[0] = 1;
-    // config[1] = 0;
-    // config[2] = 0;
-    // config[3] = 0;
-    // config[4] = 0xc0;
-    // config[5] = 0x8;
-    // config[6] = 0x0;
-    // config[7] = 0x0;
-    // config[8] = 0x80;
-    // config[9] = 0x25;
-    // config[10] = 0x0;
-    // config[11] = 0x0;
-    // config[12] = 0x0;
-    // config[13] = 0x0;
-    // config[14] = 0x0;
-    // config[15] = 0x0;
-    // config[16] = 0x0;
-    // config[17] = 0x0;
-    // config[18] = 0x0;
-    // config[19] = 0x0;
-    // err = ubx_send_msg(0x06, 0x00, 20, config);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    // long_loop2();
-
-    // payload = 0x01;
-    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
-    
-    // payload = 0;
-    // err = ubx_send_msg(0x06, 0x06, 52, &payload, 1);
-    // if (err != 0) printf("msg err: %x\n", err);
-    
-    // UBX-NAV-AOPSTATUS, seems to return something good.
-    // status field can be monitored for 0 to see if 
-    // reciever should be shut down, see pg 357. 
-    // payload = 0;
-    // err = ubx_send_msg(0x01, 0x60, 0, &payload, 0);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    // works it seems
-    // payload = 0;
-    // err = ubx_send_msg(0x01, 0x39, 0, &payload, 0);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    // this doesn't work because version isn't supported
-    // payload = 0;
-    // err = ubx_send_msg(0x01, 0x14, 0, &payload, 0);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    // payload = 0;
-    err = ubx_send_msg(0x01, 0x02, 0, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    
-    // payload = 0x02;
-    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
-    
-    // payload = 0x03;
-    // err = ubx_send_msg(0x06, 0x00, 1, &payload);
-    // if (err != 0) printf("msg err: %x\n", err);
-
-    // err = ubx_send_msg(0x06, 0x06, 0, &payload);
-    // if (err != 0) printf("msg err2: %x\n", err);
+    // +- 4g, so do ratio of reg to 2^15 and then multiply by 9.8 m/s^s and 4
+    float output = 9.8 * 4 * reg / (256*128) ;
+    return output;
 }
 
 esp_err_t print_gps_coordinates()
@@ -531,12 +466,12 @@ esp_err_t print_gps_coordinates()
             else i = 0;
         }
 
-
-
-        i ++;
+        //i ++;
         if (data_byte == 0xFF) tries ++;
     }
-    printf("%ld %ld\n", latitude, longitude);
+
+    #define ten_7 10000000
+    printf("(%ld.%ld %ld.%ld)\n", latitude / ten_7, labs(latitude) % ten_7, longitude / ten_7, labs(longitude) % ten_7);
 
     return ESP_OK;
 }
