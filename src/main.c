@@ -64,9 +64,12 @@ void app_main() {
         if (val & (1<<0)) { // if XLDA is 1 
             
             printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
+            // float x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
+            // float y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
+            // float z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);
 
             if (count >= 250) {
-                print_gps_coordinates();
+                // print_gps_coordinates();
                 // read_gps_port_config();
                 // print_gps_data_stream();
 

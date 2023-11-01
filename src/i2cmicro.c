@@ -220,6 +220,19 @@ esp_err_t init_imu()
 
     value = 0x60;
     err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
+    if (err != 0)
+        return err;
+
+
+    // set FUNC_CFG_ACCESS bit of FUNC_CFG_ACCESS
+    value = 1 << 7;
+    err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
+    if (err != 0)
+        return err;
+
+    // set INT1_SIG_MOT bit of EMB_FUNC_INT2
+    value = 1 << 5;
+    err = wrLSM6DS(LSM6DS_EMB_FUNC_INT2, &value, 1);
     return err;
 }
 
