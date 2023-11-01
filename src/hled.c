@@ -1,57 +1,59 @@
 //referencing https://github.com/espressif/esp-idf/blob/master/examples/peripherals/ledc/ledc_basic/main/ledc_basic_example_main.c
 #include <stdio.h>
-#include "driver/ledc.h"
 #include "esp_log.h"
 #include "esp_err.h"
+#include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_rom_gpio.h"
 
 #define HLED_GPIO       37
-#define HLED_TIMER      LEDC_TIMER_0  // 0
-#define HLED_MODE       LEDC_LOW_SPEED_MODE // low or high speed
-#define HLED_CHANNEL    LEDC_CHANNEL_0 // Channel 0
-#define HLED_DUTY_RES   LEDC_TIMER_13_BIT // duty resolutikon is 13 bits
-#define HLED_DUTY       (4096) // duty cycle 50%, (2^13) * 0.50 = 4096
-#define HLED_FREQ       (5000) // frequency 5 kHz
+#define DELAY           1000000// interrupt triggered every ## us
+
 
 #define TAG "HEARTBEAT LED"
 
-ledc_timer_config_t ledc_timer = {
-    .speed_mode = HLED_MODE, 
-    .timer_num = HLED_TIMER,
-    .duty_resolution = HLED_DUTY_RES,
-    .freq_hz = HLED_FREQ,
-    .clk_cfg = LEDC_AUTO_CLK
-};
+esp_timer_handle_t timer_handler; //timer 
+static bool on; // on or off
 
-ledc_channel_config_t ledc_channel = {
-    .speed_mode = HLED_MODE,
-    .channel = HLED_CHANNEL,
-    .timer_sel = HLED_TIMER, 
-    .intr_type = LEDC_INTR_DISABLE,
-    .gpio_num = HLED_GPIO, 
-    .duty = 0,
-    .hpoint = 0
-};
+void timer_cb(void *param) {
+/*************************
+ description: callback function that timer interrupt calls to set gpio high/low
+ arguments: 
+ - void *param: DO NOT TOUCH (this is the necessary config but will not have anything)
+ return: N/A
+**************************/
+    
+    on = !on; 
+    gpio_set_level(HLED_GPIO, on);
+    //ESP_LOGV(TAG, "trigger"); // only for debug, you do not want a trigger every sec
+}
 
 void init_hbeatled() {
 /*************************
- description: initialize a pwm signal of 5 kHz, 50% duty cycle
+ description: initialize a timer interrupt on the heartbeat led
  arguments: N/A
  return: N/A
 **************************/
-    ESP_LOGI(TAG, "Starting heartbeat LED...");
+    ESP_LOGI(TAG, "Configure %i to GPIO output", HLED_GPIO);
+    esp_rom_gpio_pad_select_gpio(HLED_GPIO); // configure pin to gpio
+    gpio_set_direction(HLED_GPIO, GPIO_MODE_OUTPUT); // configure for output
 
-    ESP_LOGI(TAG, "Applyig PWM timer config.");
+    // create timer
+    ESP_LOGI(TAG, "Create timer.");
+    const esp_timer_create_args_t timer_cfg = {
+        .callback = &timer_cb,
+        .name = "Heartbeat LED Timer"
+    };
     
-    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer)); 
+    ESP_ERROR_CHECK(esp_timer_create(&timer_cfg, &timer_handler));
 
-    ESP_LOGI(TAG, "Applying PWM channcel config.");
-    
-    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+    ESP_LOGI(TAG, "Starting Timer...");
+    // Set timer to trigger every DELAY microseconds
+    ESP_ERROR_CHECK(esp_timer_start_periodic(timer_handler, DELAY));
 
-    ESP_LOGI(TAG, "Setting duty");
-    ESP_ERROR_CHECK(ledc_set_duty(HLED_MODE, HLED_CHANNEL, HLED_DUTY));
-
-    ESP_LOGI(TAG, "Finishied Setting Up Heartbeat LED");
+    ESP_LOGI(TAG, "Heartbeat LED initialized.");
 }
 
 void deinit_hbeatled() {
@@ -60,4 +62,6 @@ void deinit_hbeatled() {
  arguments: N/A
  return: N/A
 **************************/
-    ESP_ERROR_CHECK(ledc_stop(HLED_MODE, HLED_CHANNEL, 0)); // not sure about last arg, supposed to be IDLE LEVEL
+    ESP_LOGI(TAG, "Stopping the timer.");
+    ESP_ERROR_CHECK(esp_timer_stop(timer_handler));
+}
