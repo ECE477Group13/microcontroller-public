@@ -11,7 +11,7 @@ void init_rgb_led(){
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .duty_resolution = LEDC_TIMER_8_BIT,
         .timer_num = LEDC_TIMER_0,
-        .freq_hz = 100,
+        .freq_hz = 60,
         .clk_cfg = LEDC_AUTO_CLK
     };
     

@@ -40,7 +40,9 @@ void app_main() {
     // Code goes here
     init_rgb_led();
 
-    int red = 255;
+    #define MAX_DUTY 10
+
+    int red = MAX_DUTY;
     int blue = 0;
     int green = 0;
 
@@ -48,7 +50,7 @@ void app_main() {
 
     while (true) {
 
-        for (int i = 0; i < 255; i += 10) {
+        for (int i = 0; i < MAX_DUTY; i += 10) {
             delay();
 
             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, red);
