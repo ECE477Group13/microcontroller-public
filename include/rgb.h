@@ -1,5 +1,5 @@
-#ifndef _LED_H
-#define _LED_H
+#ifndef _RGB_H
+#define _RGB_H
 
 #include "driver/ledc.h"
 

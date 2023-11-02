@@ -1,4 +1,4 @@
-#include "led.h"
+#include "rgb.h"
 
 // used ChatGPT
 
@@ -19,7 +19,7 @@ void init_rgb_led(){
 
     /* CHANNEL 0 */
     ledc_channel_config_t chn_config = {
-        .gpio_num = GPIO_NUM_47,
+        .gpio_num = GPIO_NUM_40,
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .channel = LEDC_CHANNEL_0,
         .intr_type = LEDC_INTR_DISABLE,
@@ -31,12 +31,12 @@ void init_rgb_led(){
     ledc_channel_config(&chn_config);
 
     /* CHANNEL 1 */
-    chn_config.gpio_num = GPIO_NUM_35;
+    chn_config.gpio_num = GPIO_NUM_41;
     chn_config.channel = LEDC_CHANNEL_1;
     ledc_channel_config(&chn_config);
 
     /* CHANNEL 2 */
-    chn_config.gpio_num = GPIO_NUM_45;
+    chn_config.gpio_num = GPIO_NUM_42;
     chn_config.channel = LEDC_CHANNEL_2;
     ledc_channel_config(&chn_config);
 
