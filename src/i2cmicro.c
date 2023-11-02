@@ -213,7 +213,7 @@ esp_err_t init_imu()
     // // section 4.1 of LSM6DSO32 appl note
     esp_err_t err;
 
-    // uint8_t value = 01;
+    uint8_t value = 01;
     // err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
     // if (err != 0)
     //     return err;
@@ -235,7 +235,7 @@ esp_err_t init_imu()
         return err;
     }
     
-    value = 0x02;
+    value = 0x00;
     err = wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1);
     if (err != 0) {
         return err;
