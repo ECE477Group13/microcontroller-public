@@ -213,57 +213,55 @@ esp_err_t init_imu()
     // // section 4.1 of LSM6DSO32 appl note
     esp_err_t err;
 
-    uint8_t value = 01;
-    err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
-    if (err != 0)
-        return err;
-
-    value = 0x60;
-    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
-    return err;
-
-    // // SECTION 6.2 OF LSM6DSO32 APPL NOTE
-    // value = 1 << 7;
-    // err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
-    // if (err != 0) {
-    //     printf("can't set cfg access\n");
+    // uint8_t value = 01;
+    // err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
+    // if (err != 0)
     //     return err;
-    // }
 
-    // value = 0x20;
-    // err = wrLSM6DS(LSM6DS_EMB_FUNC_EN_A, &value, 1);
-    // if (err != 0) {
-    //     printf("can't set write op mode\n");
-    //     return err;
-    // }
-    
-    // value = 0x20;
-    // err = wrLSM6DS(LSM6DS_EMB_FUNC_INT1, &value, 1);
-    // if (err != 0) {
-    //     return err;
-    // }
-
-    // value = 0x80;
-    // err = wrLSM6DS(LSM6DS_PAGE_RW, &value, 1);
-    // if (err != 0) {
-    //     return err;
-    // }
-
-    // value = 0x00;
-    // err = wrLSM6DS(LSM6DS_FUNC_CFG_ACCESS, &value, 1);
-    // if (err != 0) {
-    //     return err;
-    // }
-
-    // value = 0x02;
-    // err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
-    // if (err != 0) {
-    //     return err;
-    // }
-
-    // value = 0x20;
+    // value = 0x60;
     // err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
     // return err;
+
+    // // SECTION 5.6 OF LSM6DSO32 APPL NOTE
+    value = 0x50;
+    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x40;
+    err = wrLSM6DS(LSM6DS_CTRL2_G, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+    
+    value = 0x02;
+    err = wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x01;
+    err = wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x00;
+    err = wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0xE0;
+    err = wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1);
+    if (err != 0) {
+        return err;
+    }
+
+    value = 0x80;
+    err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
+    return err;
 
 }
 
