@@ -51,6 +51,11 @@ void app_main() {
     gpio_num_t button = GPIO_NUM_1;
     gpio_set_direction(button, GPIO_MODE_INPUT);
 
+    gpio_num_t gps_en = GPIO_NUM_4;
+    gpio_set_direction(gps_en, GPIO_MODE_OUTPUT);
+    // gpio_set_level(gps_en, 0);
+    gpio_set_level(gps_en, 1);
+
     ESP_LOGI(TAG, "Waiting");
     long_loop();
     ESP_LOGI(TAG, "Done waiting.");
@@ -65,7 +70,8 @@ void app_main() {
 
     int TOLERANCE = 0x200;
 
-
+    uint16_t count = 0;
+    uint8_t stage = 0;
     while(true) {
         uint8_t val; // placeholder
 
@@ -74,7 +80,7 @@ void app_main() {
 
         if (val & (1<<0)) { // if XLDA is 1 
             
-            // printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc_float(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc_float(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc_float(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
+            printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc_float(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc_float(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc_float(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
             int16_t x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
             int16_t y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
             int16_t z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);
@@ -92,7 +98,29 @@ void app_main() {
                 gpio_set_level(led, 0);
             }
 
+            if (count >= 250) {
+                // ubx_send_msg(0x01, 0x02, 0, NULL);
+                // print_gps_data_stream();
+                print_gps_coordinates();
+
+                count -= 250;
+            }
+
+            // if (gpio_get_level(button)) {
+            //     stage ++;
+            //     stage %= 2;
+            //     switch(stage) {
+            //         case 0:  gpio_set_level(gps_en, 0); break;
+            //         case 1:  gpio_set_level(gps_en, 1); break;
+            //         default: gpio_set_level(gps_en, 0); break;
+            //     }
+            //     for (int i = 0; i < 4000; i ++) { // change to timer interrupt
+            //         printf(".");
+            //     }
+            // }
         }
+
+        count ++;
     }
     
     //de_init();

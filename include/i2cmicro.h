@@ -36,5 +36,6 @@ esp_err_t print_gps_coordinates();
 void read_gps_port_config();
 float read_acc_float(uint8_t lower_reg, uint8_t higher_reg);
 int16_t read_acc(uint8_t lower_reg, uint8_t higher_reg);
+esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload);
 
 #endif
