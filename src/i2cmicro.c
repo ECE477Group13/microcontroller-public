@@ -479,49 +479,58 @@ float read_acc_float(uint8_t lower_reg, uint8_t higher_reg) {
     return output;
 }
 
-esp_err_t print_gps_coordinates()
+esp_err_t get_location(int32_t* latitude, int32_t* longitude)
 {
-    esp_err_t err;
-    
     ESP_ERROR_CHECK(ubx_send_msg(0x01, 0x02, 0, NULL));
         
-    int32_t longitude = 0;
-    int32_t latitude = 0;
-
+    int32_t new_long = 0;
+    int32_t new_lat = 0;
+    bool isNew = false;
     uint8_t data_byte = 0;
 
     int i = 0;
 
     int tries = 0;
     while (tries < 5) {
-        err = rdSAMM8Q(SAMM8Q_DATA_STREAM, &data_byte, 1);
-        if (err != 0) printf("rd err: %x\n", err);
-        if (!err) {
-                 if (data_byte == 0xb5 && i == 0) i ++;
-            else if (data_byte == 0x62 && i == 1) i ++;
-            else if (data_byte == 0x01 && i == 2) i ++;
-            else if (data_byte == 0x02 && i == 3) i ++;
-            else if (i >= 4) {
-                if (i == 10) longitude |= data_byte;
-                if (i == 11) longitude |= data_byte << 8;
-                if (i == 12) longitude |= data_byte << 16;
-                if (i == 13) longitude |= data_byte << 24;
-                if (i == 14) latitude |= data_byte;
-                if (i == 15) latitude |= data_byte << 8;
-                if (i == 16) latitude |= data_byte << 16;
-                if (i == 17) latitude |= data_byte << 24;
-                if (i == 18) i = -1;
+        rdSAMM8Q(SAMM8Q_DATA_STREAM, &data_byte, 1);
+        if ((data_byte == 0xb5 && i == 0) ||
+            (data_byte == 0x62 && i == 1) ||
+            (data_byte == 0x01 && i == 2) ||
+            (data_byte == 0x02 && i == 3) ||
+            (i >= 4)) {
+                
+            if (i == 10) new_long |= data_byte;
+            if (i == 11) new_long |= data_byte << 8;
+            if (i == 12) new_long |= data_byte << 16;
+            if (i == 13) new_long |= data_byte << 24;
+            if (i == 14) new_lat |= data_byte;
+            if (i == 15) new_lat |= data_byte << 8;
+            if (i == 16) new_lat |= data_byte << 16;
+            if (i == 17) new_lat |= data_byte << 24;
+
+            if (i == 17) {
+                if (new_long != 0 && new_lat != 0) {
+                    *longitude = new_long;
+                    *latitude = new_lat;
+                    isNew = true;
+                } else {
+                    isNew = false;
+                }
+                i = 0;
+            } else {
                 i++;
             }
-            else i = 0;
+        } else {
+            i = 0;
         }
 
         //i ++;
         if (data_byte == 0xFF) tries ++;
     }
 
-    #define ten_7 10000000
-    printf("(%ld.%ld %ld.%ld)\n", latitude / ten_7, labs(latitude) % ten_7, longitude / ten_7, labs(longitude) % ten_7);
-
-    return ESP_OK;
+    if (isNew) {
+        return ESP_OK;
+    } else {
+        return ESP_FAIL;
+    }
 }

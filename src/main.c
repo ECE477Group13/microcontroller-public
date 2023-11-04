@@ -101,7 +101,12 @@ void app_main() {
             if (count >= 250) {
                 // ubx_send_msg(0x01, 0x02, 0, NULL);
                 // print_gps_data_stream();
-                print_gps_coordinates();
+                
+                int32_t latitude;
+                int32_t longitude;
+                if (get_location(&latitude, &longitude) == ESP_OK) {
+                    printf("(%ld.%ld %ld.%ld)\n", latitude / 10000000, labs(latitude) % 10000000, longitude / 10000000, labs(longitude) % 10000000);
+                }
 
                 count -= 250;
             }

@@ -32,7 +32,7 @@ esp_err_t init_imu();
 esp_err_t init_batt_baby();
 esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
 uint8_t print_gps_data_stream();
-esp_err_t print_gps_coordinates();
+esp_err_t get_location(int32_t* latitude, int32_t* longitude);
 void read_gps_port_config();
 float read_acc_float(uint8_t lower_reg, uint8_t higher_reg);
 int16_t read_acc(uint8_t lower_reg, uint8_t higher_reg);
