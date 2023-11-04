@@ -71,7 +71,7 @@ void app_main() {
     int TOLERANCE = 0x200;
 
     uint16_t count = 0;
-    uint8_t stage = 0;
+    // uint8_t stage = 0;
     while(true) {
         uint8_t val; // placeholder
 
@@ -80,10 +80,10 @@ void app_main() {
 
         if (val & (1<<0)) { // if XLDA is 1 
             
-            printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc_float(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc_float(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc_float(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
-            int16_t x_acc = read_acc(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A);
-            int16_t y_acc = read_acc(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A);
-            int16_t z_acc = read_acc(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A);
+            //printf("X: %f m/s^2    Y: %f m/s^2    Z: %f m/s^2\n", read_acc_float(LSM6DS_OUTX_L_A, LSM6DS_OUTX_H_A), read_acc_float(LSM6DS_OUTY_L_A, LSM6DS_OUTY_H_A), read_acc_float(LSM6DS_OUTZ_L_A, LSM6DS_OUTZ_H_A));
+            int16_t x_acc = get_acc(AXIS_X);
+            int16_t y_acc = get_acc(AXIS_Y);
+            int16_t z_acc = get_acc(AXIS_Z);
             printf("X: %d    Y: %d    Z: %d    X: %d    Y: %d    Z: %d\n", x_acc, y_acc, z_acc, x_acc_set, y_acc_set, z_acc_set);
 
             if (gpio_get_level(button)) {

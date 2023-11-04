@@ -4,6 +4,11 @@
 
 #include <stdio.h>
 
+typedef uint8_t axis_t;
+#define AXIS_X 0
+#define AXIS_Y 1
+#define AXIS_Z 2
+
 #define LSM6DS_I2CADDR_DEFAULT 0x6A 
 
 #define LSM6DS_FUNC_CFG_ACCESS 0x1 

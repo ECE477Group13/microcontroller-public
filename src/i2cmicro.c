@@ -210,59 +210,38 @@ Function Arguments:
 *************************************************/
 esp_err_t init_imu()
 {
+    uint8_t value;
+    
     // // section 4.1 of LSM6DSO32 appl note
-    esp_err_t err;
-
-    uint8_t value = 01;
-    // err = wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1);
-    // if (err != 0)
-    //     return err;
+    // value = 0x01;
+    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1));
 
     // value = 0x60;
-    // err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
-    // return err;
+    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
 
     // // SECTION 5.6 OF LSM6DSO32 APPL NOTE
     value = 0x50;
-    err = wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
 
     value = 0x40;
-    err = wrLSM6DS(LSM6DS_CTRL2_G, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL2_G, &value, 1));
     
     value = 0x00;
-    err = wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1));
 
     value = 0x01;
-    err = wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1));
 
     value = 0x00;
-    err = wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1));
 
     value = 0xE0;
-    err = wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1);
-    if (err != 0) {
-        return err;
-    }
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1));
 
     value = 0x80;
-    err = wrLSM6DS(LSM6DS_MD1_CFG, &value, 1);
-    return err;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_MD1_CFG, &value, 1));
 
+    return ESP_OK;
 }
 
 /*************************************************
@@ -334,19 +313,9 @@ esp_err_t init_batt_baby()
     return result;
 }
 
-
-// /*************************************************
-// Function Description:
-// Function Arguments:
-// *************************************************/
-// esp_err_t init_gps()
-// {
-//     esp_err_t err;
-// }
-
 /*************************************************
-Function Description:
-Function Arguments:
+Function Description: prints out the gps data stream, for debugging purposes
+Function Arguments: None
 *************************************************/
 uint8_t print_gps_data_stream()
 {
@@ -385,6 +354,14 @@ uint8_t print_gps_data_stream()
     return 0;
 }
 
+/*************************************************
+Function Description: Send UBX protocol message to GPS 
+Function Arguments:
+- class: byte for class of message
+- id: byte for id of message
+- len: length of payload
+- payload: array of bytes to send as payload
+*************************************************/
 esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload) {
 
 	uint8_t ck_a = 0;
@@ -422,8 +399,6 @@ esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload
     i2c_master_write_byte(cmd, (len >> 8) & 0xFF, ACK_CHECK_EN);
     ck_a += (len >> 8) & 0xFF; ck_b += ck_a;
 
-    printf("ck_a, ck_b calculated: %x, %x\n", ck_a, ck_b);
-
     // send CK_A
     i2c_master_write_byte(cmd, ck_a, ACK_CHECK_EN);
 
@@ -441,44 +416,49 @@ esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload
     return ret;
 }
 
-int long_loop2() {
-    volatile int j = 0;
-    ESP_LOGI("i2cmicro", "Start wait");
-    for (int i = 0; i < 1; i++) {
-        for(int k = 0; k < 10000000; k++) { // 10000000
-            j = (i | j) - 1 + k;
-        }
-    }
-    ESP_LOGI("i2cmicro", "End wait");
-
-    // for (int i = 0; i < 5000; i++) {
-    //     ESP_LOGI(TAG, ".");
-    // }
-
-    return j;
-}
-
-int16_t read_acc(uint8_t lower_reg, uint8_t higher_reg) {
+/*************************************************
+Function Description: Retrieve acceleration from IMU
+Function Arguments:
+- axis: axis of desired acceleration: AXIS_X, AXIS_Y or AXIS_Z
+*************************************************/
+int16_t get_acc(axis_t axis) {
+    uint8_t lower_reg;
+    uint8_t higher_reg;
+    
     uint8_t l_reg;
     uint8_t h_reg;
+    
+    switch(axis) {
+        case AXIS_X: lower_reg = LSM6DS_OUTX_L_A; higher_reg = LSM6DS_OUTX_H_A; break;
+        case AXIS_Y: lower_reg = LSM6DS_OUTY_L_A; higher_reg = LSM6DS_OUTY_H_A; break;
+        case AXIS_Z: lower_reg = LSM6DS_OUTZ_L_A; higher_reg = LSM6DS_OUTZ_H_A; break;
+        default: return 0;
+    }
+    
     rdLSM6DS(lower_reg, &(l_reg), 1);
     rdLSM6DS(higher_reg, &(h_reg), 1);
     return (h_reg << 8) | l_reg;
 }
 
-float read_acc_float(uint8_t lower_reg, uint8_t higher_reg) {
-    uint8_t l_reg;
-    uint8_t h_reg;
-    rdLSM6DS(lower_reg, &(l_reg), 1);
-    rdLSM6DS(higher_reg, &(h_reg), 1);
-    short reg = (h_reg << 8) | l_reg;
-    // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
+// float read_acc_float(uint8_t lower_reg, uint8_t higher_reg) {
+//     uint8_t l_reg;
+//     uint8_t h_reg;
+//     rdLSM6DS(lower_reg, &(l_reg), 1);
+//     rdLSM6DS(higher_reg, &(h_reg), 1);
+//     short reg = (h_reg << 8) | l_reg;
+//     // if (reg & (1<<15)) reg = reg | ((256*256-1) << 16);
 
-    // +- 4g, so do ratio of reg to 2^15 and then multiply by 9.8 m/s^s and 4
-    float output = 9.8 * 4 * reg / (256*128) ;
-    return output;
-}
+//     // +- 4g, so do ratio of reg to 2^15 and then multiply by 9.8 m/s^s and 4
+//     float output = 9.8 * 4 * reg / (256*128) ;
+//     return output;
+// }
 
+/*************************************************
+Function Description: retrieve latitude and longitude from GPS
+Function Arguments:
+- latitude: pointer to latitude value
+- longitude: pointer to longitude value
+*************************************************/
 esp_err_t get_location(int32_t* latitude, int32_t* longitude)
 {
     ESP_ERROR_CHECK(ubx_send_msg(0x01, 0x02, 0, NULL));
@@ -498,15 +478,18 @@ esp_err_t get_location(int32_t* latitude, int32_t* longitude)
             (data_byte == 0x01 && i == 2) ||
             (data_byte == 0x02 && i == 3) ||
             (i >= 4)) {
-                
-            if (i == 10) new_long |= data_byte;
-            if (i == 11) new_long |= data_byte << 8;
-            if (i == 12) new_long |= data_byte << 16;
-            if (i == 13) new_long |= data_byte << 24;
-            if (i == 14) new_lat |= data_byte;
-            if (i == 15) new_lat |= data_byte << 8;
-            if (i == 16) new_lat |= data_byte << 16;
-            if (i == 17) new_lat |= data_byte << 24;
+
+            switch(i) {
+                case 10: new_long |= data_byte;         break;
+                case 11: new_long |= data_byte << 8;    break;
+                case 12: new_long |= data_byte << 16;   break;
+                case 13: new_long |= data_byte << 24;   break;
+                case 14: new_lat |= data_byte;          break;
+                case 15: new_lat |= data_byte << 8;     break;
+                case 16: new_lat |= data_byte << 16;    break;
+                case 17: new_lat |= data_byte << 24;    break;
+                default:                                break;
+            }
 
             if (i == 17) {
                 if (new_long != 0 && new_lat != 0) {
@@ -524,7 +507,6 @@ esp_err_t get_location(int32_t* latitude, int32_t* longitude)
             i = 0;
         }
 
-        //i ++;
         if (data_byte == 0xFF) tries ++;
     }
 
