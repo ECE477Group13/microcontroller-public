@@ -6,9 +6,6 @@
 #include "driver/i2c.h"
 #include "esp_log.h"
 
-#include "LSM6DS.h"
-#include "BQ27441.h"
-#include "SAMM8Q.h"
 
 // setup based on https://gist.github.com/mws-rmain/2ba434cd2a3f32d6d343c1c60fbd65c8
 #define I2C_PORT I2C_NUM_0 // I2C port # for master development
@@ -27,13 +24,9 @@
 #define TICK_RATE 100000000 // ms before timeout
 
 // Function declarations
+esp_err_t i2c_master_rd_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_rd, size_t size);
+esp_err_t i2c_master_wr_slave(i2c_port_t i2c_port, uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_wr, size_t size);
 uint32_t init_i2c_master();
-esp_err_t init_imu();
 esp_err_t init_batt_baby();
-esp_err_t rdLSM6DS(uint8_t reg, uint8_t *pdata, uint8_t count);
-uint8_t print_gps_data_stream();
-esp_err_t get_location(int32_t* latitude, int32_t* longitude);
-int16_t get_acc(axis_t axis);
-esp_err_t ubx_send_msg(uint8_t class, uint8_t id, uint16_t len, uint8_t* payload);
 
 #endif
