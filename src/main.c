@@ -98,17 +98,20 @@ void app_main() {
                 gpio_set_level(led, 0);
             }
 
-            if (count >= 250) {
+            if (count >= 2000) {
                 // ubx_send_msg(0x01, 0x02, 0, NULL);
                 // print_gps_data_stream();
                 
                 int32_t latitude;
                 int32_t longitude;
+                
+                printf("GPS start\n");
                 if (get_location(&latitude, &longitude) == ESP_OK) {
                     printf("(%ld.%ld %ld.%ld)\n", latitude / 10000000, labs(latitude) % 10000000, longitude / 10000000, labs(longitude) % 10000000);
                 }
+                printf("GPS end\n");
 
-                count -= 250;
+                count -= 2000;
             }
 
             // if (gpio_get_level(button)) {
