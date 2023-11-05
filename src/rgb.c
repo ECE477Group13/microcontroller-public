@@ -11,7 +11,7 @@ void init_rgb_led(){
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .duty_resolution = LEDC_TIMER_8_BIT,
         .timer_num = LEDC_TIMER_0,
-        .freq_hz = 60,
+        .freq_hz = 100,
         .clk_cfg = LEDC_AUTO_CLK
     };
     
@@ -40,4 +40,20 @@ void init_rgb_led(){
     chn_config.channel = LEDC_CHANNEL_2;
     ledc_channel_config(&chn_config);
 
+}
+
+void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue) {
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, red);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, green);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, blue);
+
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+}
+
+void rgb_off() {
+    ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+    ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+    ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
 }

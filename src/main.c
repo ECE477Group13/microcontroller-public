@@ -11,8 +11,8 @@
 void delay() {
 
     for (int z = 0; z < DELAY_TIME; z++) {
-                    ESP_LOGI(TAG, ".");
-                }
+        ESP_LOGI(TAG, ".");
+    }
 }
 
 /*************************************************
@@ -40,68 +40,53 @@ void app_main() {
     // Code goes here
     init_rgb_led();
 
-    #define MAX_DUTY 10
+    #define MAX_DUTY 255
 
     int red = MAX_DUTY;
-    int blue = 0;
     int green = 0;
+    int blue = 0;
+
+    rgb_set_color(red, green, blue);
 
     int stage = 0;
 
+    while (true) {
     while (true) {
 
         for (int i = 0; i < MAX_DUTY; i += 10) {
             delay();
 
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, red);
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, green);
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, blue);
+            rgb_set_color(red, green, blue);
 
             if (stage == 0) {
                 red --;
-                blue ++;
+                green ++;
                 if (red == 0) stage = 1;
             } else if (stage == 1) {
-                blue --;
-                green ++;
-                if (blue == 0) stage = 2;
-            } else if (stage == 2) {
                 green --;
+                blue ++;
+                if (green == 0) stage = 2;
+            } else if (stage == 2) {
+                blue --;
                 red ++;
-                if (green == 0) stage = 0;
+                if (blue == 0) stage = 0;
             }
-
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
-
         }
-
-        // for (int i = 0; i < 255; i += 10) {
-        //     for (int z = 0; z < DELAY_TIME; z++) {
-        //         ESP_LOGI(TAG, ".");
-        //     }
-
-        //     for (int j = 0; j < 255; j += 10) {
-        //         for (int z = 0; z < DELAY_TIME; z++) {
-        //             ESP_LOGI(TAG, ".");
-        //         }
-
-        //         for (int k = 0; k < 255; k += 10) {
-        //             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, i);
-        //             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-        //             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, j);
-        //             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
-        //             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, k);
-        //             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
-        //             for (int z = 0; z < DELAY_TIME; z++) {
-        //                 ESP_LOGI(TAG, ".");
-        //             }
-        //         }
-        //     }
-        // }
+        if (stage == 2) {
+            red = MAX_DUTY;
+            green = 0;
+            blue = 0;
+            stage = 0;
+            break;
+        }
     }
-    
+
+    rgb_off();
+
+    for (int z = 0; z < 500; z++) {
+        ESP_LOGI(TAG, ".");
+    }
+    }
 
     //de_init();
     
