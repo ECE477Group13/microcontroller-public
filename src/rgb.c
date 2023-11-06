@@ -35,7 +35,7 @@ void init_rgb_led(){
         .timer_sel = LEDC_TIMER_0,
         .duty = 3,
         .hpoint = 27,
-        .flags.output_invert = 1
+        .flags.output_invert = 0
     };
     ledc_channel_config(&chn_config);
 

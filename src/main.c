@@ -41,7 +41,11 @@ void app_main() {
     init_imu();
     init_rgb_led();
 
-    rgb_set_color(0xFF, 0x00, 0xFF, true);
+    gpio_num_t gps_en = GPIO_NUM_4;
+    gpio_set_direction(gps_en, GPIO_MODE_OUTPUT);
+    gpio_set_level(gps_en, 0);
+
+    rgb_set_color(0x04, 0x00, 0x04, true);
 
     uint16_t count = 0;
     while(true) {
