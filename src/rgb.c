@@ -10,8 +10,8 @@ static color_t color = {255, 0, 255};
 static bool flashing = false;
 
 /*************************************************
-Function Description:
-Function Arguments:
+Function Description: Initialize the RGB LED
+Function Arguments: None
 *************************************************/
 void init_rgb_led(){
     // used ChatGPT
@@ -51,6 +51,14 @@ void init_rgb_led(){
 
 }
 
+/*************************************************
+Function Description: Set color and whether the RGB should flash 
+Function Arguments:
+- red: red brightness, 0x00-0xFF
+- green: green brightness, 0x00-0xFF
+- blue: blue brightness, 0x00-0xFF
+- flash: boolean on whether to flash on and off
+*************************************************/
 void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash) {
     color.r = red;
     color.g = green;
@@ -60,6 +68,19 @@ void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash) {
     rgb_update_color();
 }
 
+/*************************************************
+Function Description: Turns off the RGB LED
+Function Arguments: None
+*************************************************/
+void rgb_off() {
+    flashing = false;
+    rgb_stop();
+}
+
+/*************************************************
+Function Description: Updates the color of the RGB LED
+Function Arguments: None
+*************************************************/
 void rgb_update_color() {
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, color.r);
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, color.g);
@@ -70,18 +91,28 @@ void rgb_update_color() {
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
 }
 
-void rgb_off() {
+/*************************************************
+Function Description: Turns off RGB LED without disabling flashing
+Function Arguments: None
+*************************************************/
+void rgb_stop() {
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
 }
 
+/*************************************************
+Function Description: Turns RGB LED on and off when flashing is on,
+called from hled.c
+Function Arguments: 
+- on: bool that dictates whether to turn it on or off
+*************************************************/
 void rgb_toggle(bool on) {
     if (flashing) {
         if (on) {
             rgb_update_color();
         } else {
-            rgb_off();
+            rgb_stop();
         }
     }
 }

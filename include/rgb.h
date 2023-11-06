@@ -6,7 +6,8 @@
 void init_rgb_led();
 void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash);
 void rgb_off();
-void rgb_toggle(bool on);
 void rgb_update_color();
+void rgb_stop();
+void rgb_toggle(bool on);
 
 #endif
