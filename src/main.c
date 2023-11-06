@@ -9,7 +9,7 @@
 
 #define TAG "MAIN"
 
-#define DELAY_TIME 5
+#define DELAY_TIME 5000
 void delay() {
     for (int z = 0; z < DELAY_TIME; z++) {
         ESP_LOGI(TAG, ".");
@@ -79,38 +79,49 @@ void app_main() {
     // Code goes here
     init_rgb_led();
 
-    #define MAX_DUTY 255
+    rgb_set_color(0x00, 0x00, 0xFF, true);
+    delay();
+    rgb_set_color(0x00, 0x00, 0xFF, false);
+    delay();
+    rgb_set_color(0x00, 0xFF, 0x00, false);
+    delay();
+    rgb_set_color(0xFF, 0x7F, 0x00, true);
+    delay();
+    rgb_set_color(0xFF, 0x00, 0x00, false);
+    delay();
 
-    int red = MAX_DUTY;
-    int green = 0;
-    int blue = 0;
+    // #define MAX_DUTY 255
 
-    rgb_set_color(red, green, blue);
+    // int red = MAX_DUTY;
+    // int green = 0;
+    // int blue = 0;
 
-    int stage = 0;
+    // rgb_set_color(red, green, blue, false);
 
-    while (true) {
+    // int stage = 0;
 
-        for (int i = 0; i < MAX_DUTY; i += 10) {
-            delay();
+    // while (true) {
 
-            rgb_set_color(red, green, blue);
+    //     for (int i = 0; i < MAX_DUTY; i += 10) {
+    //         delay();
 
-            if (stage == 0) {
-                red --;
-                green ++;
-                if (red == 0) stage = 1;
-            } else if (stage == 1) {
-                green --;
-                blue ++;
-                if (green == 0) stage = 2;
-            } else if (stage == 2) {
-                blue --;
-                red ++;
-                if (blue == 0) stage = 0;
-            }
-        }
-    }
+    //         rgb_set_color(red, green, blue, false);
+
+    //         if (stage == 0) {
+    //             red --;
+    //             green ++;
+    //             if (red == 0) stage = 1;
+    //         } else if (stage == 1) {
+    //             green --;
+    //             blue ++;
+    //             if (green == 0) stage = 2;
+    //         } else if (stage == 2) {
+    //             blue --;
+    //             red ++;
+    //             if (blue == 0) stage = 0;
+    //         }
+    //     }
+    // }
 
     //de_init();
     

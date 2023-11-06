@@ -7,6 +7,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_rom_gpio.h"
+#include "rgb.h"
 
 #define HLED_GPIO       37
 #define DELAY           1000000// interrupt triggered every ## us
@@ -28,6 +29,7 @@ void timer_cb(void *param) {
     on = !on; 
     gpio_set_level(HLED_GPIO, on);
     //ESP_LOGV(TAG, "trigger"); // only for debug, you do not want a trigger every sec
+    rgb_toggle(on);
 }
 
 void init_hbeatled() {

@@ -1,5 +1,14 @@
 #include "rgb.h"
 
+typedef struct color_t {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} color_t;
+
+static color_t color = {255, 0, 255};
+static bool flashing = false;
+
 /*************************************************
 Function Description:
 Function Arguments:
@@ -42,10 +51,19 @@ void init_rgb_led(){
 
 }
 
-void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue) {
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, red);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, green);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, blue);
+void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash) {
+    color.r = red;
+    color.g = green;
+    color.b = blue;
+    flashing = flash;
+
+    rgb_update_color();
+}
+
+void rgb_update_color() {
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, color.r);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, color.g);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, color.b);
 
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
@@ -56,4 +74,14 @@ void rgb_off() {
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
     ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
+}
+
+void rgb_toggle(bool on) {
+    if (flashing) {
+        if (on) {
+            rgb_update_color();
+        } else {
+            rgb_off();
+        }
+    }
 }
