@@ -3,6 +3,7 @@
 #include "i2smicro.h"
 #include "i2cmicro.h"
 #include "sd.h"
+#include "rgb.h"
 #include "imu.h"
 #include "gps.h"
 
@@ -26,17 +27,21 @@ void app_main() {
 
     init_hbeatled();
 
-    ESP_LOGI(TAG, "Waiting");
-    for (int i = 0; i < 1000; i++) {
-        ESP_LOGI(TAG, ".");
-    }
-    ESP_LOGI(TAG, "Done waiting.");
+    // ESP_LOGI(TAG, "Waiting");
+    // for (int i = 0; i < 1000; i++) {
+    //     ESP_LOGI(TAG, ".");
+    // }
+    // ESP_LOGI(TAG, "Done waiting.");
 
     // Code goes here
     init_i2c_master();
     // init_sd();
     // init_i2s_tx();
     // play_wav_i2s("/sdcard/wav4s.wav");
+    init_imu();
+    init_rgb_led();
+
+    rgb_set_color(0xFF, 0x00, 0xFF, true);
 
     uint16_t count = 0;
     while(true) {
@@ -67,7 +72,7 @@ void app_main() {
         }
         count ++;
     }
-    
+
     //de_init();
     
 }
