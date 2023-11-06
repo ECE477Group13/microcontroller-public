@@ -1,12 +1,12 @@
 #include "rgb.h"
 
-// used ChatGPT
-
 /*************************************************
 Function Description:
 Function Arguments:
 *************************************************/
 void init_rgb_led(){
+    // used ChatGPT
+
     ledc_timer_config_t config = {
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .duty_resolution = LEDC_TIMER_8_BIT,
