@@ -42,38 +42,38 @@ esp_err_t init_imu()
     rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
     value |= 0x01;
     wrLSM6DS(LSM6DS_CTRL3_C, &value, 1);
-    while((value & (1<<0)) != 0) {
-        rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
-    }
+    // while((value & (1<<0)) != 0) {
+    //     rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
+    // }
 
     // section 4.1 of LSM6DSO32 appl note
     // value = 0x01;
     // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_INT1_CTRL, &value, 1));
 
-    value = 0x60;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
-
-    // // // SECTION 5.6 OF LSM6DSO32 APPL NOTE
-    // value = 0x50;
+    // value = 0x60;
     // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
 
-    // value = 0x40;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL2_G, &value, 1));
+    // // // SECTION 5.6 OF LSM6DSO32 APPL NOTE
+    value = 0x50;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
+
+    value = 0x40;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL2_G, &value, 1));
     
-    // value = 0x00;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1));
+    value = 0x00;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1));
 
-    // value = 0x01;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1));
+    value = 0x01;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1));
 
-    // value = 0x00;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1));
+    value = 0x00;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1));
 
-    // value = 0xE0;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1));
+    value = 0xE0;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1));
 
-    // value = 0x80;
-    // ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_MD1_CFG, &value, 1));
+    value = 0x80;
+    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_MD2_CFG, &value, 1));
 
     return ESP_OK;
 }

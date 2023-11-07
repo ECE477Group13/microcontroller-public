@@ -27,26 +27,27 @@ void app_main() {
 
     init_hbeatled();
 
-    // ESP_LOGI(TAG, "Waiting");
-    // for (int i = 0; i < 1000; i++) {
-    //     ESP_LOGI(TAG, ".");
-    // }
-    // ESP_LOGI(TAG, "Done waiting.");
+    ESP_LOGI(TAG, "Waiting");
+    for (int i = 0; i < 1000; i++) {
+        ESP_LOGI(TAG, ".");
+    }
+    ESP_LOGI(TAG, "Done waiting.");
 
     // Code goes here
     init_i2c_master();
     // init_sd();
     // init_i2s_tx();
     // play_wav_i2s("/sdcard/wav4s.wav");
+
     init_imu();
+
     init_rgb_led();
 
     gpio_num_t gps_en = GPIO_NUM_4;
     gpio_set_direction(gps_en, GPIO_MODE_OUTPUT);
-    gpio_set_level(gps_en, 0);
+    gpio_set_level(gps_en, 1);
 
     rgb_set_color(0x04, 0x00, 0x04, true);
-
     uint16_t count = 0;
     while(true) {
         uint8_t val;
