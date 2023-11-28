@@ -27,11 +27,11 @@ void init_i2s_tx() {
     * They can help to specify the slot and clock configurations for initialization or updating */
     i2s_std_config_t std_cfg = {
         .clk_cfg = {
-            .sample_rate_hz = 44100,
+            .sample_rate_hz = 512*32,
             .clk_src = I2S_CLK_SRC_PLL_160M,
-            .mclk_multiple = I2S_MCLK_MULTIPLE_256,
+            .mclk_multiple = I2S_MCLK_MULTIPLE_512,
         },
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED, 
             .bclk = I2S_BCLK, 

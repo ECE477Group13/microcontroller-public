@@ -3,7 +3,8 @@
 
 #include "esp_log.h"
 #include "esp_system.h"
-#include "esp_spi_flash.h"
+//#include "esp_spi_flash.h"
+#include "spi_flash_mmap.h"
 #include "driver/sdmmc_host.h"
 #include "driver/sdspi_host.h"
 #include "driver/sdmmc_defs.h"

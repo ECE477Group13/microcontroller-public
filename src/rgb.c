@@ -1,4 +1,6 @@
 #include "rgb.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 
 typedef struct color_t {
     uint8_t r;
@@ -8,6 +10,25 @@ typedef struct color_t {
 
 static color_t color = {255, 0, 255};
 static bool flashing = false;
+
+esp_timer_handle_t rgb_timer_handler; 
+
+void rgb_timer_cb(void *param) { 
+/*************************
+ description: callback function that timer interrupt calls signal warning period over
+ arguments: 
+ - void *param: DO NOT TOUCH (this is the necessary config but will not have anything)
+ return: N/A
+**************************/
+    rgb_off();
+    esp_timer_stop(rgb_timer_handler); 
+}
+
+void rgb_start_timer() {
+    // ESP_LOGI(TAG, "FSM timer start start");
+    esp_timer_stop(rgb_timer_handler); 
+    ESP_ERROR_CHECK(esp_timer_start_once(rgb_timer_handler, 5 * 1000000));
+}
 
 /*************************************************
 Function Description: Initialize the RGB LED
@@ -49,6 +70,14 @@ void init_rgb_led(){
     chn_config.channel = LEDC_CHANNEL_2;
     ledc_channel_config(&chn_config);
 
+    // timer
+    const esp_timer_create_args_t timer_cfg = {
+        .callback = &rgb_timer_cb,
+        .name = "rgb timer"
+    };
+    
+    ESP_ERROR_CHECK(esp_timer_create(&timer_cfg, &rgb_timer_handler));
+
 }
 
 /*************************************************
@@ -58,14 +87,21 @@ Function Arguments:
 - green: green brightness, 0x00-0xFF
 - blue: blue brightness, 0x00-0xFF
 - flash: boolean on whether to flash on and off
+- timer_off_en: turns off the rgb after period of time
 *************************************************/
-void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash) {
+void rgb_set_color(uint8_t red, uint8_t green, uint8_t blue, bool flash, bool timer_off_en) {
+    esp_timer_stop(rgb_timer_handler); 
+
     color.r = red;
     color.g = green;
     color.b = blue;
     flashing = flash;
 
     rgb_update_color();
+
+    if (timer_off_en) {
+        rgb_start_timer();
+    }
 }
 
 /*************************************************
@@ -74,6 +110,7 @@ Function Arguments: None
 *************************************************/
 void rgb_off() {
     flashing = false;
+    esp_timer_stop(rgb_timer_handler);
     rgb_stop();
 }
 
@@ -116,3 +153,4 @@ void rgb_toggle(bool on) {
         }
     }
 }
+

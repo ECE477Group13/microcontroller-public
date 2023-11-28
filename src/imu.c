@@ -4,6 +4,7 @@
  File Description: IMU functions
 *************************************************/
 #include "imu.h"
+#define TAG "IMU"
 
 /*************************************************
 Function Description:
@@ -37,14 +38,17 @@ Function Arguments:
 esp_err_t init_imu()
 {
     uint8_t value;
+    esp_err_t err = ESP_OK; 
     
-    // perform software reset
+    // section 5.7 of LSM6DSO32 appl note - perform software reset
     rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
     value |= 0x01;
     wrLSM6DS(LSM6DS_CTRL3_C, &value, 1);
-    // while((value & (1<<0)) != 0) {
-    //     rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
-    // }
+    uint16_t count = 0;
+    while(count < 2000 && (value & (1<<0)) != 0) {
+        rdLSM6DS(LSM6DS_CTRL3_C, &value, 1);
+        count ++;
+    }
 
     // section 4.1 of LSM6DSO32 appl note
     // value = 0x01;
@@ -55,27 +59,31 @@ esp_err_t init_imu()
 
     // // // SECTION 5.6 OF LSM6DSO32 APPL NOTE
     value = 0x50;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1));
+    err |= wrLSM6DS(LSM6DS_CTRL1_XL, &value, 1);
 
     value = 0x40;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_CTRL2_G, &value, 1));
+    err |= wrLSM6DS(LSM6DS_CTRL2_G, &value, 1);
     
     value = 0x00;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1));
+    err |= wrLSM6DS(LSM6DS_WAKE_UP_DUR, &value, 1);
 
     value = 0x01;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1));
+    err |= wrLSM6DS(LSM6DS_WAKE_UP_THS, &value, 1);
 
     value = 0x00;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1));
+    err |= wrLSM6DS(LSM6DS_TAP_CFG0, &value, 1);
 
     value = 0xE0;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1));
+    err |= wrLSM6DS(LSM6DS_TAP_CFG2, &value, 1);
 
     value = 0x80;
-    ESP_ERROR_CHECK(wrLSM6DS(LSM6DS_MD2_CFG, &value, 1));
+    err |= wrLSM6DS(LSM6DS_MD2_CFG, &value, 1);
 
-    return ESP_OK;
+    if (err) {
+        ESP_LOGI(TAG, "IMU INITIALIZATION ERROR");
+    }
+
+    return err;
 }
 
 /*************************************************

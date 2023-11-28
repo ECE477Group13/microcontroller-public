@@ -13,7 +13,7 @@
 #define I2S_DIN I2S_GPIO_UNUSED
 #define I2S_PORT 0 //Port number
 
-#define AUDIO_BUFFER 4096 // size of audio buffer
+#define AUDIO_BUFFER 512 // size of audio buffer
 
 void init_i2s_tx();
 void destroy_i2s_tx();

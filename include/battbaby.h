@@ -7,5 +7,7 @@
 esp_err_t rdBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count);
 esp_err_t wrBQ27441(uint8_t reg, uint8_t *pdata, uint8_t count);
 esp_err_t init_batt_baby();
+uint8_t get_batt_percent();
+int16_t get_batt_current();
 
 #endif

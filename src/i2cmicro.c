@@ -130,4 +130,3 @@ uint32_t init_i2c_master()
 
     return ret;
 }
-

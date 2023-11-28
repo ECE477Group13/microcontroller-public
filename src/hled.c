@@ -67,3 +67,7 @@ void deinit_hbeatled() {
     ESP_LOGI(TAG, "Stopping the timer.");
     ESP_ERROR_CHECK(esp_timer_stop(timer_handler));
 }
+
+
+
+
